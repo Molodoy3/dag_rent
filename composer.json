@@ -18,7 +18,6 @@
         "spatie/laravel-typescript-transformer": "^2.4",
         "tightenco/ziggy": "^2.3",
         "torann/geoip": "^3.0"
-      //"ext-http": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
