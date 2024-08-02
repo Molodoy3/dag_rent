@@ -123,7 +123,9 @@ function windowLoad() {
         });
     }
     document.addEventListener("click", (e)=> {
+        console.log(1)
         if (e.target.closest(".button-delete-image")) {
+            console.log(111)
             const item = e.target.closest('.item-image');
             const image = item.querySelector("img");
             item.remove();
