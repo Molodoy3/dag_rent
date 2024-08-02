@@ -256,7 +256,7 @@ function formatMatherDate(dateString: string) {
                                    @input="form.images=$event.target.files"/>
                             <div class="form__image">
                                 <div v-if="props.images" v-for="image in props.images" class="item-image">
-                                    <img data-open-image v-bind:src="image" alt="image">
+                                    <img data-open-image v-bind:src="'/' + image" alt="image">
                                     <button @click="deleteImage(image)" class="button-delete-image">X</button>
                                 </div>
                             </div>
