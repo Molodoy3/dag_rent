@@ -257,7 +257,7 @@ function formatMatherDate(dateString: string) {
                             <div class="form__image">
                                 <div v-if="props.images" v-for="image in props.images" class="item-image">
                                     <img data-open-image v-bind:src="'/storage/' + image" alt="image">
-                                    <button @click="deleteImage(image)" class="button-delete-image">X</button>
+                                    <div @click="deleteImage(image)" class="button-delete-image">X</div>
                                 </div>
                             </div>
                             <label for="image" class="button button_image">Добавить изображение</label>

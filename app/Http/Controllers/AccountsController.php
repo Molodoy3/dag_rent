@@ -225,7 +225,7 @@ class AccountsController extends Controller
         $accountUpdate->games->searchable();
 
         //Загрузка изображений в папку под именем id аккаунта
-        $directory = '/public/img/accounts/' . $accountId;
+        $directory = '/img/public/accounts/' . $accountId;
         if (!Storage::disk('public')->exists($directory))
             Storage::disk('public')->makeDirectory($directory);
         if (isset($account->allFiles()['images'])) {
