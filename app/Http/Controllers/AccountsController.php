@@ -138,12 +138,16 @@ class AccountsController extends Controller
     }
     public function edit(Account $account) {
         //Mail::to(User::query()->first())->send(new OrderShipped());
+        $images = Storage::disk('public')->files('/img/public/accounts/'.$account->id);
+        foreach ($images as $image) {
+            $image = Storage::disk('public')->url($image);
+        }
         return Inertia::render("Accounts/Edit", [
             'account' => $account,
             'gamesAccount' => $account->games()->get()->pluck('id'),
             'games' => Game::all(),
             'platforms' => Platform::all(),
-            'images' => Storage::disk('public')->files('/img/public/accounts/'.$account->id)
+            'images' => $images
         ]);
     }
     public function update(Request $account) {
@@ -221,7 +225,7 @@ class AccountsController extends Controller
         $accountUpdate->games->searchable();
 
         //Загрузка изображений в папку под именем id аккаунта
-        $directory = '/img/public/accounts/' . $accountId;
+        $directory = '/public/img/accounts/' . $accountId;
         if (!Storage::disk('public')->exists($directory))
             Storage::disk('public')->makeDirectory($directory);
         if (isset($account->allFiles()['images'])) {
