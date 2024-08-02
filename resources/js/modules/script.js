@@ -24,7 +24,7 @@ export function delegationClick() {
             const menuBody = document.querySelector('.menu__body');
             menuBody.classList.toggle('open');
             targetElement.closest('.menu__icon').classList.toggle('active');
-            document.body.classList.toggle('lock');
+            document.body.classList.toggle('lock-burg');
 
             if (menuBody.classList.contains('open')) {
                 window.addEventListener('resize', closeMenu);
@@ -40,7 +40,7 @@ export function delegationClick() {
                 if (iconMenu) {
                     iconMenu.classList.remove('active');
                 }
-                document.body.classList.remove('lock');
+                document.body.classList.remove('lock-burg');
             }
         }
 

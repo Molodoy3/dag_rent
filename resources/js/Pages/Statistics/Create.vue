@@ -31,6 +31,7 @@ const form = useForm({
         hour: '2-digit',
         minute: '2-digit'
     }).replace(',', ''),
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
 });
 //form.added_at = formatMatherDate(form.added_at);
 

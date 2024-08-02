@@ -53,7 +53,7 @@ function formatDate(dateString: string) {
     <DefaultLayout>
         <Head title="Аккаунты"></Head>
         <section class="accounts">
-                        <img data-open-image="" src="/storage/app/img/public/accounts/74/TtzQ5LPqzHsswi2bXbgQyq3QxBscDCXnqGTrXEjc.png" alt="image">
+
 
             <ais-instant-search id="search-wrap" :search-client="client" index-name="accounts" class='accounts__container'>
                 <div class="accounts__header">

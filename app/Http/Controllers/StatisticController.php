@@ -63,7 +63,13 @@ class StatisticController extends Controller
     public function store(Request $request) {
         $statistic = $request->statistic;
         StatisticData::validate($statistic);
-        $statistic['added_at'] = DateTime::createFromFormat('d.m H:i', $statistic['added_at']);
+
+        //$statistic['added_at'] = DateTime::createFromFormat('d.m H:i', $statistic['added_at']);
+        $busy = $statistic['added_at'] ? Carbon::createFromFormat('d.m H:i', $statistic['added_at'], $statistic['timezone']) : null;
+        // Преобразуем время из одного часового пояса в UTC (+0)
+        $busyUtc = $busy ? $busy->setTimezone('UTC') : null;
+        $statistic['added_at'] = $busyUtc;
+
         Statistic::query()->create($statistic);
         return redirect()->route('statistics.index')->with("message", "Продажа успешна добавлена!");
     }

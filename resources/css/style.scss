@@ -26,6 +26,10 @@ body {
     &.lock {
         overflow: hidden;
     }
+    &.lock-burg{
+        overflow: hidden;
+
+    }
 }
 
 .lock{
@@ -33,6 +37,7 @@ body {
     pointer-events: none;
     opacity: .6;
 }
+
 .wrapper {
     min-height: 100%;
     width: 100%;
