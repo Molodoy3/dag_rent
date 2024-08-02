@@ -29,6 +29,7 @@ class AccountData extends Data
         public ?string $passwordEmail,
         public int $price,
         public ?int $status,
+        #[Max(3000)]
         public ?string $comment,
         public int $user_id
     )

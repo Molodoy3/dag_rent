@@ -18,7 +18,7 @@ class Statistic extends Model
     ];
     public function getAddedAtAttribute($value)
     {
-        return Carbon::parse($value)->format('Y-m-d\TH:i:s.u\Z');
+        return $value ? Carbon::parse($value)->format('Y-m-d\TH:i:s.u\Z') : null;
     }
     public $timestamps = false;
     protected $fillable = [

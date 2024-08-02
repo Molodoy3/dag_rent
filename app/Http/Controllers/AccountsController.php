@@ -107,12 +107,22 @@ class AccountsController extends Controller
 
         //Загрузка изображений в папку под именем id аккаунта
         //$directory = '/img/accounts/' . $accountId;
-        $directory = '/img/public/accounts/' . $accountId;
+        /*$directory = '/img/public/accounts/' . $accountId;
         if (!Storage::disk('local')->exists($directory)) {
             Storage::disk('local')->makeDirectory($directory);
             if (isset($account->allFiles()['images'])) {
                 foreach ($account->allFiles()['images'] as $image) {
                     Storage::disk('local')->putFile($directory, $image);
+                }
+            }
+        }*/
+        //можно менять public на local
+        $directory = 'public/img/public/accounts/' . $accountId; // Здесь добавляем 'public/' в путь
+        if (!Storage::disk('public')->exists($directory)) {
+            Storage::makeDirectory($directory);
+            if (isset($account->allFiles()['images'])) {
+                foreach ($account->allFiles()['images'] as $image) {
+                    Storage::disk('public')->putFile($directory, $image);
                 }
             }
         }
@@ -133,7 +143,7 @@ class AccountsController extends Controller
             'gamesAccount' => $account->games()->get()->pluck('id'),
             'games' => Game::all(),
             'platforms' => Platform::all(),
-            'images' => Storage::files('/img/public/accounts/'.$account->id)
+            'images' => Storage::disk('public')->files('/img/public/accounts/'.$account->id)
         ]);
     }
     public function update(Request $account) {
@@ -146,7 +156,7 @@ class AccountsController extends Controller
         //Удаление изображений
         if (isset($account['imagesForDel'])) {
             $UpdatingImages = $account['imagesForDel'];
-            $oldImagesFolder = Storage::files('/img/public/accounts/'.$account['id']);
+            $oldImagesFolder = Storage::disk('public')->files('/img/public/accounts/'.$account['id']);
 
             $imagesToDelete = []; // Массив для хранения путей к изображениям для удаления
             // Сравнение массивов и формирование списка изображений для удаления
@@ -163,7 +173,7 @@ class AccountsController extends Controller
             }
             // Удаление изображений из хранилища
             foreach ($imagesToDelete as $imageToDelete) {
-                Storage::delete($imageToDelete);
+                Storage::disk('public')->delete($imageToDelete);
             }
         }
 
@@ -212,11 +222,11 @@ class AccountsController extends Controller
 
         //Загрузка изображений в папку под именем id аккаунта
         $directory = '/img/public/accounts/' . $accountId;
-        if (!Storage::disk('local')->exists($directory))
-            Storage::disk('local')->makeDirectory($directory);
+        if (!Storage::disk('public')->exists($directory))
+            Storage::disk('public')->makeDirectory($directory);
         if (isset($account->allFiles()['images'])) {
             foreach ($account->allFiles()['images'] as $image) {
-                Storage::disk('local')->putFile($directory, $image);
+                Storage::disk('public')->putFile($directory, $image);
             }
         }
 

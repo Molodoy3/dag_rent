@@ -30,7 +30,7 @@ class Account extends Model
     // и чтобы не было проблем с часовым поясом
     public function getBusyAttribute($value)
     {
-        return Carbon::parse($value)->format('Y-m-d\TH:i:s.u\Z');
+        return $value ? Carbon::parse($value)->format('Y-m-d\TH:i:s.u\Z') : null;
     }
     //хотел преоброзовывать автоматически дату по часовому поясу пользователя, но не получилось что-то
     /*public function setBusyAttribute($value)
@@ -51,7 +51,7 @@ class Account extends Model
             'id' => (int) $this->id,
             'login' => $this->login,
             'password' => $this->password,
-            'busy' => Carbon::parse($this->busy)->format('Y-m-d\TH:i:s.u\Z'),
+            'busy' => $this->busy ? Carbon::parse($this->busy)->format('Y-m-d\TH:i:s.u\Z') : null,
             'platform_name' => $this->getPlatform()->name ?? null,
             'games' => implode(', ', $games),
             'status' => $this->status,
