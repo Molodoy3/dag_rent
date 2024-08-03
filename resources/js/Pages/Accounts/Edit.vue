@@ -102,8 +102,7 @@ function deleteAccount() {
 }
 
 function deleteImage(image) {
-    //form.imagesForDel = form.imagesForDel.filter(img => img !== image);
-    //console.log(image);
+    form.imagesForDel = form.imagesForDel.filter(img => img !== image);
 }
 
 const { copy, text } = useClipboard({});

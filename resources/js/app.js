@@ -2,6 +2,7 @@ import { createApp, h } from 'vue'
 import { createInertiaApp } from '@inertiajs/vue3'
 import VueInstantSearch from 'vue-instantsearch/vue3/es';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
+import "./modules/smoothScroll.js"
 
 createInertiaApp({
     resolve: name => {
@@ -37,7 +38,7 @@ import { closeMenu } from './modules/script.js';
 //?Функция определения мобильного устройства
 //import { isMobile } from "./modules/functions";
 //?Импортирование плавного скролла
-import "./modules/smoothScroll.js"
+
 
 //?Галерея FancyBox
 //import { Fancybox } from "@fancyapps/ui";
