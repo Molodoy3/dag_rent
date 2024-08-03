@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string("login");
             $table->string("password");
-            $table->foreignId("platform_id")->references("id")->on("platforms")->cascadeOnDelete()->cascadeOnUpdate();
+            //$table->foreignId("platform_id")->references("id")->on("platforms")->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamp("busy")->nullable();
             $table->string("email")->nullable();
             $table->string("passwordEmail")->nullable();
@@ -33,9 +33,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //Schema::dropIfExists('accounts');
         Schema::table('accounts', function (Blueprint $table) {
-            $table->dropSoftDeletes();
+            $table->dropForeign(['user_id']);
         });
+        //Schema::dropIfExists('accounts');
+        Schema::dropIfExists('accounts');
     }
 };

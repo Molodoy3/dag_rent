@@ -4,6 +4,14 @@ export function delegationClick() {
     function documentActions(e) {
         const targetElement = e.target;
 
+        //визуальное удаление изображения
+        if (targetElement.closest(".button-delete-image")) {
+            console.log(111)
+            const item = e.target.closest('.item-image');
+            //const image = item.querySelector("img");
+            item.remove();
+        }
+
         //удаление окна сообщения
         if (targetElement.closest(".button-delete-message")) {
             targetElement.closest("div").remove();

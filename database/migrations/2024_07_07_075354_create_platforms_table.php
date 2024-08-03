@@ -17,6 +17,9 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes('deleted_at', precision: 0);
         });
+        Schema::table('accounts', function (Blueprint $table) {
+            $table->foreignId("platform_id")->references("id")->on("platforms")->cascadeOnDelete()->cascadeOnUpdate();
+        });
     }
 
     /**
@@ -24,6 +27,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('accounts', function (Blueprint $table) {
+            $table->dropForeign(['platform_id']);
+            $table->dropColumn('platform_id'); // удаляем колонку при откате миграции
+        });
         Schema::dropIfExists('platforms');
     }
 };

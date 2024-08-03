@@ -6,37 +6,44 @@ import Title from "../Components/Title.vue";
 import LabelInput from "../Components/LabelInput.vue";
 import { useForm } from "@inertiajs/vue3";
 import Button from "../Components/Button.vue";
-import { PropType } from "vue";
+import {onUnmounted, PropType} from "vue";
 import AccountData = App.Data.AccountData;
 import InputError from "../Components/InputError.vue";
 import { onMounted,  } from 'vue';
 import { initCustomSelect } from '../../modules/customSelect.js';
 
+
+let fileInput;
+let listener;
 onMounted(() => {
     initCustomSelect(false);
+    const listener = (e) => {
+        images = e.target.files;
+        for (let i = 0; i < images.length; i++) {
+            const wrap = form.querySelector(".form__image");
+            const item = document.createElement('div');
+            item.classList.add("item-image");
+            wrap.appendChild(item);
+            const image = images[i];
+            const imageUrl = URL.createObjectURL(image);
+            //data-image-numb="${i}"
+            item.innerHTML += `<img data-open-image src="${imageUrl}" alt="image">`;
+            /*const closeButton = document.createElement('div');
+            closeButton.classList.add("button-delete-image");
+            closeButton.innerText = 'X';
+            item.appendChild(closeButton);*/
+        }
+    }
     let images;
     const form = document.querySelector("#formImage");
     if (form) {
-        const fileInput = form.querySelector("input[type='file']");
-        fileInput.addEventListener("change", e => {
-            images = e.target.files;
-            for (let i = 0; i < images.length; i++) {
-                const wrap = form.querySelector(".form__image");
-                const item = document.createElement('div');
-                item.classList.add("item-image");
-                wrap.appendChild(item);
-                const image = images[i];
-                const imageUrl = URL.createObjectURL(image);
-                //data-image-numb="${i}"
-                item.innerHTML += `<img data-open-image src="${imageUrl}" alt="image">`;
-                const closeButton = document.createElement('div');
-                closeButton.classList.add("button-delete-image");
-                closeButton.innerText = 'X';
-                item.appendChild(closeButton);
-            }
-        });
+        fileInput = form.querySelector("input[type='file']");
+        fileInput.addEventListener("change", listener);
     }
 })
+onUnmounted(() => {
+    fileInput.removeEventListener(listener);
+});
 
 const props = defineProps({
     'account': Object as PropType<AccountData>,

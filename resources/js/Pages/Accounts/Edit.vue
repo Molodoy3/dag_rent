@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { PropType } from "vue";
+import {onUnmounted, PropType} from "vue";
 import AccountData = App.Data.AccountData;
 import {Head, Link, useForm} from "@inertiajs/vue3";
 import Title from "../Components/Title.vue";
@@ -14,31 +14,37 @@ import {useClipboard} from "@vueuse/core";
 import { onMounted,  } from 'vue';
 import { initCustomSelect } from '../../modules/customSelect.js';
 
+let fileInput;
+let listener;
 onMounted(() => {
     initCustomSelect(false);
+    const listener = (e) => {
+        images = e.target.files;
+        for (let i = 0; i < images.length; i++) {
+            const wrap = form.querySelector(".form__image");
+            const item = document.createElement('div');
+            item.classList.add("item-image");
+            wrap.appendChild(item);
+            const image = images[i];
+            const imageUrl = URL.createObjectURL(image);
+            //data-image-numb="${i}"
+            item.innerHTML += `<img data-open-image src="${imageUrl}" alt="image">`;
+            /*const closeButton = document.createElement('div');
+            closeButton.classList.add("button-delete-image");
+            closeButton.innerText = 'X';
+            item.appendChild(closeButton);*/
+        }
+    }
     let images;
     const form = document.querySelector("#formImage");
     if (form) {
-        const fileInput = form.querySelector("input[type='file']");
-        fileInput.addEventListener("change", e => {
-            images = e.target.files;
-            for (let i = 0; i < images.length; i++) {
-                const wrap = form.querySelector(".form__image");
-                const item = document.createElement('div');
-                item.classList.add("item-image");
-                wrap.appendChild(item);
-                const image = images[i];
-                const imageUrl = URL.createObjectURL(image);
-                //data-image-numb="${i}"
-                item.innerHTML += `<img data-open-image src="${imageUrl}" alt="image">`;
-                const closeButton = document.createElement('div');
-                closeButton.classList.add("button-delete-image");
-                closeButton.innerText = 'X';
-                item.appendChild(closeButton);
-            }
-        });
+        fileInput = form.querySelector("input[type='file']");
+        fileInput.addEventListener("change", listener);
     }
 })
+onUnmounted(() => {
+    fileInput.removeEventListener("change", listener);
+});
 
 const props = defineProps({
     'account': Object as PropType<AccountData>,
@@ -96,8 +102,8 @@ function deleteAccount() {
 }
 
 function deleteImage(image) {
-    form.imagesForDel = form.imagesForDel.filter(img => img !== image);
-    console.log(form.imagesForDel);
+    //form.imagesForDel = form.imagesForDel.filter(img => img !== image);
+    //console.log(image);
 }
 
 const { copy, text } = useClipboard({});
@@ -257,7 +263,7 @@ function formatMatherDate(dateString: string) {
                             <div class="form__image">
                                 <div v-if="props.images" v-for="image in props.images" class="item-image">
                                     <img data-open-image v-bind:src="'/storage/' + image" alt="image">
-                                    <button  @click="deleteImage(image)" class="button-delete-image">X</button>
+                                    <div @click="deleteImage(image)" class="button-delete-image">X</div>
                                 </div>
                             </div>
                             <label for="image" class="button button_image">Добавить изображение</label>

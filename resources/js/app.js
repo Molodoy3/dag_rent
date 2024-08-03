@@ -2,7 +2,6 @@ import { createApp, h } from 'vue'
 import { createInertiaApp } from '@inertiajs/vue3'
 import VueInstantSearch from 'vue-instantsearch/vue3/es';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
-import "./echo.js";
 
 createInertiaApp({
     resolve: name => {
@@ -99,30 +98,8 @@ function windowLoad() {
 
     console.log(it.files);*/
 
-    //обработка фронта изображений для аккаунтов
-    let images;
-    const form = document.querySelector("#formImage");
-    if (form) {
-        const fileInput = form.querySelector("input[type='file']");
-        fileInput.addEventListener("change", e => {
-            images = e.target.files;
-            for (let i = 0; i < images.length; i++) {
-                const wrap = form.querySelector(".form__image");
-                const item = document.createElement('div');
-                item.classList.add("item-image");
-                wrap.appendChild(item);
-                const image = images[i];
-                const imageUrl = URL.createObjectURL(image);
-                //data-image-numb="${i}"
-                item.innerHTML += `<img data-open-image src="${imageUrl}" alt="image">`;
-                const closeButton = document.createElement('div');
-                closeButton.classList.add("button-delete-image");
-                closeButton.innerText = 'X';
-                item.appendChild(closeButton);
-              }
-        });
-    }
-    document.addEventListener("click", (e)=> {
+    //визуальное удаление изображения перенес в делегирование клика
+    /*document.addEventListener("click", (e)=> {
         console.log(1)
         if (e.target.closest(".button-delete-image")) {
             console.log(111)
@@ -130,7 +107,7 @@ function windowLoad() {
             const image = item.querySelector("img");
             item.remove();
         }
-    });
+    });*/
 }
 
 

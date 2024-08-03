@@ -18,21 +18,21 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Auth::factory(10)->create();
-
-        /*Auth::factory()->create([
-            'name' => 'Test Auth',
-            'email' => 'test@example.com',
-        ]);
+        //Auth::factory(10)->create();
         Role::factory()->create([
             'name' => 'admin',
         ]);
         Role::factory()->create([
             'name' => 'client',
         ]);
+        User::factory()->create([
+            'name' => 'Test Auth',
+            'email' => 'test@example.com',
+            'role_id' => 1
+        ]);
         Game::factory(5)->create();
         Platform::factory(5)->create();
-        AccountData::factory(5)->create();*/
+        Account::factory(5)->create();
 
         //ошибку выдает
         //Statistic::factory(10)->create();
