@@ -56,7 +56,7 @@
     });
 
 
-    const VAPID_PUBLIC_KEY = 'BN53eXrgmFRcI_pwrTRxReVXgJeQic0rCQxybKDxZDDD6Mv_FdPT_wnh14Wb225p8nhFZbarl-kXLZo4hBjDIzo';
+    const VAPID_PUBLIC_KEY = 'BGum-fulDrniTxeaHoXkzM4HwpuxHoV4gAn60oDyVTROxSfw16WL16ATLy84mF0a-Nm8tv3SI5_jG2skEbIeD9o';
     const csrftoken = document.querySelector('meta[name="csrf-token"]').getAttribute('Content');
     if ("serviceWorker" in navigator) {
         window.addEventListener("load", function() {
