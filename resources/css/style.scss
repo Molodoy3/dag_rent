@@ -47,6 +47,7 @@ body {
 }
 
 .page {
+    scroll-behavior: smooth;
     flex: 1 1 auto;
     padding-top: rem(80);
 }

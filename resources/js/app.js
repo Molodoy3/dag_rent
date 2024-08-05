@@ -3,7 +3,7 @@ import { createInertiaApp } from '@inertiajs/vue3'
 import VueInstantSearch from 'vue-instantsearch/vue3/es';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 //import "./modules/smoothScroll.js";
-import Smooth from 'smooth-scrolling';
+//import Smooth from 'smooth-scrolling';
 
 
 createInertiaApp({
@@ -54,18 +54,20 @@ import { closeMenu } from './modules/script.js';
 
 window.addEventListener("DOMContentLoaded", windowLoad);
 function windowLoad() {
-    const smooth = new Smooth({
+    /*const smooth = new Smooth({
         native: true,
-        section: document.querySelector('.wrapper'),
+        section: document.querySelector('section'),
         ease: 0.1
     });
-    smooth.init();
+    smooth.init();*/
+
+
     new customOpenImage();
     delegationClick();
     //initCustomSelect(false);
 
     //Создание плавного скролла
-    /*SmoothScroll({
+    SmoothScroll({
         // Время скролла 400 = 0.4 секунды
         animationTime: 600,
         // Размер шага в пикселях
@@ -86,7 +88,7 @@ function windowLoad() {
         pulseNormalize: 1,
         // Поддержка тачпада
         touchpadSupport: true,
-    });*/
+    });
 
 
     /*const it = document.querySelector("#image");

@@ -21,6 +21,7 @@
         "dayjs": "^1.11.11",
         "pinia": "^2.2.0",
         "smooth-scrolling": "^2.3.12",
+        "smoothscroll-polyfill": "^0.4.4",
         "vue": "^3.4.31",
         "vue-instantsearch": "^4.18.0"
     }

@@ -14,7 +14,7 @@
 </head>
 <body>
 @inertia
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/smoothscroll/1.4.10/SmoothScroll.min.js" integrity="sha256-huW7yWl7tNfP7lGk46XE+Sp0nCotjzYodhVKlwaNeco=" crossorigin="anonymous"></script>
 <script>
     //ниже все для уведомлений
     //подкл к уведомлениям и тестовая отправка через js
