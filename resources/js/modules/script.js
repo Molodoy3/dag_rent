@@ -6,7 +6,6 @@ export function delegationClick() {
 
         //визуальное удаление изображения
         if (targetElement.closest(".button-delete-image")) {
-            console.log(111)
             const item = e.target.closest('.item-image');
             //const image = item.querySelector("img");
             item.remove();
@@ -55,21 +54,35 @@ export function delegationClick() {
         //?Плавный скрол между якорями (работает вообще на все ссылки)
         if (targetElement.closest('a')) {
             const link = targetElement.closest('a');
-            const goToBlock = document.querySelector(link.getAttribute('href').replace('/', ''));
-            if (goToBlock) {
-                let goToBlockValue = goToBlock.getBoundingClientRect().top + scrollY;
-                const header = document.querySelector('.header');
-                if (header) {
-                    goToBlockValue -= header.offsetHeight;
+            const href = link.getAttribute('href').replace('/', '');
+
+            // Проверяем, является ли href корректным селектором
+            const isValidSelector = (str) => {
+                try {
+                    document.querySelector(str);
+                    return true;
+                } catch (e) {
+                    return false;
                 }
-                window.scrollTo({
-                    top: goToBlockValue,
-                    behavior: "smooth"
-                });
-                e.preventDefault();
+            };
+
+            if (isValidSelector(href)) {
+                const goToBlock = document.querySelector(href);
+
+                if (goToBlock) {
+                    let goToBlockValue = goToBlock.getBoundingClientRect().top + scrollY;
+                    const header = document.querySelector('.header');
+                    if (header) {
+                        goToBlockValue -= header.offsetHeight;
+                    }
+                    window.scrollTo({
+                        top: goToBlockValue,
+                        behavior: "smooth"
+                    });
+                    e.preventDefault();
+                }
             }
         }
-
 
         //переключение (выбор) опции
         if (targetElement.closest("[data-custom-select-option]")) {
