@@ -383,11 +383,15 @@ textarea {
     } */
 
     &__item {
+        .button {
+            font-size: rem(10);
+            padding: rem(5) rem(10);
+        }
         flex: 1 1 auto;
         border: .5px solid #4d4d4d;
         border-radius: rem(6);
         box-shadow: 0 0 rem(5) #ffffff28;
-        padding: rem(7);
+        padding: rem(9);
         display: flex;
         flex-direction: column;
 
@@ -427,6 +431,7 @@ textarea {
     &__weight {}
 
     &__status {
+        margin-top: rem(-5);
         flex: 1 1 auto;
     }
 
@@ -438,7 +443,7 @@ textarea {
         flex-wrap: wrap;
     }
 
-    &__button {}
+
 
     &__copy {
         background-color: var(--blue);
