@@ -19,39 +19,52 @@ use Inertia\Inertia;
 
 class AccountsController extends Controller
 {
-    public function index() {
+    public function index(Request $request) {
 
-        //dd(Account::all());
-        //$statisticController = new StatisticController();
-        //$statisticController->add(Account::query()->first());
-        //dd(new DateTime() > new DateTime(Account::query()->find(64)->busy));
-        //Mail::to(auth()->user())->send(new OrderShipped(Account::query()->find(38)));
-
-
-        //dd(auth()->user()->id);
-        /*$admins = User::query()->where('role_id', '=', 1)->get();
-        foreach ($admins as $admin) {
-            if (count($admin->routeNotificationForWebPush())) {
-                dd(1);
-                $admin->notify(new AccountFree(Account::query()->first()));
-            }
-        }*/
+/*        dd(Account::with("platform", "games")->when($request->input("search"), function ($query, $search) {
+            $query
+                ->where('login', 'like', '%' . $search . '%')
+                ->orWhere('busy', 'like', '%' . $search . '%')
+                ->orWhereHas('platform', function ($query) use ($search) {
+                    $query->where('name', 'like', '%' . $search . '%');
+                })
+                ->orWhereHas('account.games', function ($query) use ($search) {
+                    $query->where('name', 'like', '%' . $search . '%');
+                });
+        })->get()[2]->games);*/
 
         //dd(Account::search('mr')->get());
-        return Inertia::render("Accounts/Index"/*, [
-            'accounts' => DB::table('accounts')
-                ->join('platforms', 'accounts.platform_id', '=', 'platforms.id')
-                ->leftJoin('account_games', 'accounts.id', '=', 'account_games.account_id')
-                ->leftJoin('games', function($join) {
-                    $join->on('account_games.game_id', '=', 'games.id');
-                    // Группируем по games.id внутри LEFT JOIN
-                    $join->groupBy('games.id');
-                })
-                ->select('accounts.id', 'accounts.login', 'accounts.password', 'accounts.busy', 'platforms.name as platform_name',
-                    DB::raw('GROUP_CONCAT(games.name SEPARATOR ", ") as games'))
-                ->groupBy('accounts.id')
+
+        return Inertia::render("Accounts/Index", [
+            "platforms" => Platform::query()->orderBy("name")->get(),
+
+            "accounts" => Account::query()->
+                //делаем связь
+                with("platform", "games")
+                    //используем поле для обработки запроса
+                    ->when($request->input("platform_id"), function ($query, $platform_id) {
+                            //поиск со связанной таблицей
+                            $query->whereHas("platform", function ($query) use ($platform_id) {
+                                $query->where('id', 'like', '%' . $platform_id . '%');
+                            });
+                    })
+                    ->when($request->input("search"), function ($query, $search) {
+                        $query
+                            ->where('login', 'like', '%' . $search . '%')
+                            ->orWhere('busy', 'like', '%' . $search . '%')
+                            ->orWhereHas('platform', function ($query) use ($search) {
+                                $query->where('name', 'like', '%' . $search . '%');
+                            })
+                            ->orWhereHas('games', function ($query) use ($search) {
+                                $query->where('name', 'like', '%' . $search . '%');
+                            });
+                    })
+                //сортировка
+                ->orderBy("status", "desc")
+                ->orderBy("busy", "desc")
+                //получение
                 ->get()
-        ]*/);
+        ]);
     }
     public function show(Account $account) {
         return Inertia::render("Accounts/Show", [
@@ -102,20 +115,9 @@ class AccountsController extends Controller
         }
 
         //ДОБАВЛЯЕМ В ИНДЕКАСАЦИЮ ДЛЯ ПОИСКА ПОЛЯ
-        $accountNew->searchable();
-        $accountNew->games->searchable();
+        //$accountNew->searchable();
+        //$accountNew->games->searchable();
 
-        //Загрузка изображений в папку под именем id аккаунта
-        //$directory = '/img/accounts/' . $accountId;
-        /*$directory = '/img/public/accounts/' . $accountId;
-        if (!Storage::disk('local')->exists($directory)) {
-            Storage::disk('local')->makeDirectory($directory);
-            if (isset($account->allFiles()['images'])) {
-                foreach ($account->allFiles()['images'] as $image) {
-                    Storage::disk('local')->putFile($directory, $image);
-                }
-            }
-        }*/
         //можно менять public на local
         $directory = 'public/img/public/accounts/' . $accountId; // Здесь добавляем 'public/' в путь
         if (!Storage::disk('public')->exists($directory)) {
@@ -127,13 +129,6 @@ class AccountsController extends Controller
             }
         }
 
-        //срабатывание события
-        /*event(
-            new AccountUpdate(
-                accounts: Account::all()
-            )
-        );*/
-        //перенаправляем на главную
         return redirect()->route('accounts.index')->with("message", "Аккаунт " . $accountNew->login . " успешно добавлен!");
     }
     public function edit(Account $account) {
@@ -151,11 +146,8 @@ class AccountsController extends Controller
         ]);
     }
     public function update(Request $account) {
-        //$account =  $request;
-        //dd($request->busy);
-        //dd(DateTime::createFromFormat('d.m H:i', $account['busy']));
-        AccountData::validate($account);
         //Валидация
+        AccountData::validate($account);
 
         //Удаление изображений
         if (isset($account['imagesForDel'])) {
@@ -219,10 +211,8 @@ class AccountsController extends Controller
         }
 
         //ДОБАВЛЯЕМ В ИНДЕКАСАЦИЮ ДЛЯ ПОИСКА ПОЛЯ
-        //$account = Account::query()->with('accountGames')->with('platforms')->find($accountId);
-
-        $accountUpdate->searchable();
-        $accountUpdate->games->searchable();
+        //$accountUpdate->searchable();
+        //$accountUpdate->games->searchable();
 
         //Загрузка изображений в папку под именем id аккаунта
         $directory = '/img/public/accounts/' . $accountId;
@@ -234,26 +224,11 @@ class AccountsController extends Controller
             }
         }
 
-        //срабатывание события
-        /*event(
-            new AccountUpdate(
-                account: $account,
-                selectedGames: $selectedGames,
-            )
-        );*/
         return redirect()->route('accounts.index')->with("message", "Аккаунт " . $account['login'] . " успешно обновлен!");
     }
     public function destroy(Account $account) {
         $account->delete();
-        //$account->deleted = 1;
-        //$account->save();
 
-        //срабатывание события
-        /*event(
-            new AccountUpdate(
-                accounts: Account::all()
-            )
-        );*/
         return redirect()->route('accounts.index')->with("message", "Аккаунт " . $account['login'] . " успешно удален!");
     }
 }

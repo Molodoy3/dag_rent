@@ -20,7 +20,7 @@ class Account extends Model
     use SoftDeletes;
     use HasFactory;
     //на счет поиска
-    use Searchable;
+    //use Searchable;
     protected $dates = [
         'created_at',
         'updated_at',
@@ -40,7 +40,7 @@ class Account extends Model
         $this->attributes['busy'] = Carbon::parse($value, $userTimezone)->utc()->toDateTimeString();
     }*/
 
-    public function searchableAs()
+    /*public function searchableAs()
     {
         return 'accounts'; // Убедитесь, что это совпадает с именем индекса Algolia
     }
@@ -56,7 +56,7 @@ class Account extends Model
             'games' => implode(', ', $games),
             'status' => $this->status,
         ];
-    }
+    }*/
     public function statistic():HasMany {
         return $this->hasMany(Statistic::class);
     }

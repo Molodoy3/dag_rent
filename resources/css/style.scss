@@ -93,9 +93,9 @@ mark{
     font-weight: 700;
 }
 .title {
-    @include adaptiv-value('font-size', 40, 27, 1);
+    @include adaptiv-value('font-size', 30, 22, 1);
     font-weight: 700;
-    margin-bottom: em(30, 40);
+    margin-bottom: em(20, 30);
 }
 .buttons{
     display: flex;
@@ -104,7 +104,7 @@ mark{
 }
 .button {
     display: inline-block;
-    font-size: rem(16);
+    font-size: rem(13);
     transition: all 0.3s ease;
     color: #000;
     cursor: pointer;
@@ -113,8 +113,8 @@ mark{
     }
 
     background-color: var(--yellow);
-    padding: rem(10) rem(15);
-    border-radius: rem(10);
+    padding: rem(7) rem(12);
+    border-radius: rem(6);
     font-weight: 600;
 
     &:focus {
@@ -188,6 +188,7 @@ a {
     background-color: #313131 !important;
     padding: rem(7) rem(12);
     border-radius: rem(7);
+    font-size: rem(14);
     display: block;
     margin-bottom: rem(12);
     color: #fff;
@@ -233,18 +234,24 @@ textarea {
 .message{
     position: relative;
     background-color: rgba(26, 185, 0, 0.27);
-    padding: rem(30) rem(30) rem(25) rem(25);
+    padding: rem(25) rem(25) rem(23) rem(23);
     border: rem(1) solid #1AB900;
     border-radius: rem(12);
     display: inline-block;
-    margin-bottom: rem(30);
+    margin-bottom: rem(20);
     margin-top: rem(-20);
 }
 /*===========================================================================================================*/
 .accounts {
-    @include adaptiv-value('padding-top', 40, 20, 1);
-    @include adaptiv-value('padding-bottom', 40, 20, 1);
+    @include adaptiv-value('padding-top', 30, 15, 1);
+    @include adaptiv-value('padding-bottom', 30, 15, 1);
 
+    .form__custom-select{
+        width: rem(150);
+        @media (max-width: $md4){
+            width: 100%;
+        }
+    }
     &__header {
         display: flex;
         column-gap: rem(10);
@@ -277,7 +284,7 @@ textarea {
         margin-bottom: rem(10);
         margin-top: rem(5);
     }
-    .ais-SearchBox-form {
+    /* .ais-SearchBox-form {
         margin-bottom: rem(15);
         padding: rem(10) rem(12);
         background-color: #2b2b2b;
@@ -314,12 +321,12 @@ textarea {
 
 
         }
-    }
+    } */
 
     &__container {}
 
     &__add {
-        @include adaptiv-value('margin-bottom', 40, 20, 1);
+        @include adaptiv-value('margin-bottom', 25, 15, 1);
     }
 
     &__title {}
@@ -328,28 +335,35 @@ textarea {
         list-style-type: none;
     }
 
-    .ais-Hits-list {
+    &__row {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(rem(350), 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(rem(290), 1fr));
 
         @media (max-width: $md4) {
-            grid-template-columns: repeat(auto-fill, minmax(rem(290), 1fr));
+            //grid-template-columns: repeat(auto-fill, minmax(rem(200), 1fr));
         }
 
-        @include adaptiv-value('gap', 20, 10, 1);
+        @include adaptiv-value('gap', 10, 7, 1);
     }
 
-    .ais-Hits-item {
+    &__platform{
+        text-transform: uppercase;
+        color: var(--yellow);
+        font-weight: 700;
+        font-size: rem(10);
+    }
+
+    /* .ais-Hits-item {
         display: flex;
         flex-direction: column;
-    }
+    } */
 
     &__item {
         flex: 1 1 auto;
-        border: 1px solid #4d4d4d;
-        border-radius: rem(8);
+        border: .5px solid #4d4d4d;
+        border-radius: rem(6);
         box-shadow: 0 0 rem(5) #ffffff28;
-        padding: rem(15);
+        padding: rem(7);
         display: flex;
         flex-direction: column;
 
@@ -394,25 +408,26 @@ textarea {
 
     &__free {
         background-color: var(--green);
-        font-size: rem(12);
+        font-size: rem(10);
         color: var(--white);
         padding: rem(5) rem(10);
         border-radius: rem(10);
         display: inline-block;
         align-self: flex-start;
         font-weight: 500;
-        margin-bottom: rem(10);
+        margin-bottom: rem(7);
         margin-top: rem(5);
     }
 
     &__date {
+        font-size: rem(12);
         align-self: flex-start;
         border: rem(1) solid var(--red);
         display: inline-block;
         border-radius: rem(10);
         padding: rem(4) rem(10);
         font-weight: 500;
-        margin-bottom: rem(15);
+        margin-bottom: rem(7);
         margin-top: rem(5);
     }
 
@@ -547,8 +562,8 @@ textarea {
     right: rem(5);
     color: var(--white);
     background-color: #07070749;
-    padding: rem(5);
-    font-size: rem(12);
+    padding: rem(3);
+    font-size: rem(10);
     font-weight: 600;
     transition: transform 0.3s ease;
     cursor: pointer;
@@ -584,7 +599,7 @@ textarea {
     &__row {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(rem(290), 1fr));
-        gap: rem(20);
+        @include adaptiv-value('gap', 10, 7, 1);
     }
 
     &__item {
@@ -595,7 +610,7 @@ textarea {
         transition: transform 0.3s ease;
         >* {
             &:not(:last-child) {
-                margin-bottom: rem(10);
+                margin-bottom: rem(7);
             }
         }
         &:focus {
@@ -608,10 +623,12 @@ textarea {
         }
     }
 
-    &__date {}
+    &__date {
+        font-size: rem(12);
+    }
 
     &__account-info {
-        font-size: rem(18);
+        font-size: rem(16);
         font-weight: 500;
     }
     &__account-games{
@@ -620,9 +637,9 @@ textarea {
         gap: rem(5);
         span{
             border: rem(1) solid #ffd50081;
-            padding: rem(5);
-            border-radius: rem(5);
-            font-size: rem(14);
+            padding: rem(4);
+            border-radius: rem(3);
+            font-size: rem(12);
         }
         margin-bottom: rem(7);
     }
@@ -685,6 +702,11 @@ textarea {
         font-size: rem(13);
         opacity:.8;
     }
-}
 
+}
+.search-col{
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: rem(10);
+}
 /*=============================================================================================================*/
