@@ -61,8 +61,7 @@ class AccountsController extends Controller
                     })
                 //сортировка
                 ->orderBy("status", "desc")
-                ->orderBy("busy", "asc")
-                //получение
+                ->orderByRaw('busy IS NULL, busy ASC')
                 ->get()
         ]);
     }
