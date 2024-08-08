@@ -145,17 +145,14 @@ onUnmounted(() => {
                         <h3 class="statistics__account-games"><span v-for="game in item.games">{{ game.name }}</span>
                         </h3>
                         <div class="accounts__info">
-                            <!--                        <div class="accounts__info-title">Логин:</div>-->
                             <span class="accounts__weight">{{
                                 item.login
                                 }}</span>
                         </div>
                         <div class="accounts__info">
-                            <!--                        <div class="accounts__info-title">Пароль:</div>-->
                             <span class="accounts__weight">{{ item.password }}</span>
                         </div>
                         <div class="accounts__info">
-                            <!--                        <div class="accounts__info-title">Пароль:</div>-->
                             <span class="accounts__platform">{{ item.platform.name }}</span>
                         </div>
                         <div class="accounts__status">
