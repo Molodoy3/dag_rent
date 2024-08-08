@@ -261,7 +261,7 @@ textarea {
     }
     &__process{
         background-color: var(--yellow);
-        font-size: rem(12);
+        font-size: rem(10);
         color: #000;
         font-weight: 500;
         padding: rem(5) rem(10);
@@ -274,7 +274,7 @@ textarea {
     }
     &__problem{
         background-color: var(--red);
-        font-size: rem(12);
+        font-size: rem(10);
         color: var(--white);
         padding: rem(5) rem(10);
         border-radius: rem(10);
@@ -282,6 +282,30 @@ textarea {
         align-self: flex-start;
         font-weight: 500;
         margin-bottom: rem(10);
+        margin-top: rem(5);
+    }
+    &__free {
+        background-color: var(--green);
+        font-size: rem(10);
+        color: var(--white);
+        padding: rem(5) rem(10);
+        border-radius: rem(10);
+        display: inline-block;
+        align-self: flex-start;
+        font-weight: 500;
+        margin-bottom: rem(7);
+        margin-top: rem(5);
+    }
+
+    &__date {
+        font-size: rem(12);
+        align-self: flex-start;
+        border: rem(1) solid var(--red);
+        display: inline-block;
+        border-radius: rem(10);
+        padding: rem(4) rem(10);
+        font-weight: 500;
+        margin-bottom: rem(7);
         margin-top: rem(5);
     }
     /* .ais-SearchBox-form {
@@ -406,30 +430,7 @@ textarea {
         flex: 1 1 auto;
     }
 
-    &__free {
-        background-color: var(--green);
-        font-size: rem(10);
-        color: var(--white);
-        padding: rem(5) rem(10);
-        border-radius: rem(10);
-        display: inline-block;
-        align-self: flex-start;
-        font-weight: 500;
-        margin-bottom: rem(7);
-        margin-top: rem(5);
-    }
 
-    &__date {
-        font-size: rem(12);
-        align-self: flex-start;
-        border: rem(1) solid var(--red);
-        display: inline-block;
-        border-radius: rem(10);
-        padding: rem(4) rem(10);
-        font-weight: 500;
-        margin-bottom: rem(7);
-        margin-top: rem(5);
-    }
 
     &__buttons {
         display: flex;
