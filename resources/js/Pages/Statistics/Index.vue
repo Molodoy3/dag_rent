@@ -46,7 +46,7 @@ onMounted(() => {
                     preserveScroll: true,
                 }
             );
-        }, 1000);
+        }, 5000);
 });
 onUnmounted(() => {
     clearInterval(updating);
@@ -80,7 +80,7 @@ function formatMatherDate(dateString: string) {
                     {{mess}}
                 </div>
                 <div class="statistics__row">
-                    <div @click="router.get('/statistics/' + field.id + '/edit')" v-for="field in fields"
+                    <div @click="router.get('/statistics/' + field.id + '/edit')" v-for="field in fields.data"
                         class="statistics__item">
                         <div class="statistics__date">{{ formatMatherDate(field.added_at) }}</div>
                         <div class="statistics__account-info">
@@ -91,6 +91,11 @@ function formatMatherDate(dateString: string) {
                         <div class="statistics__date"><mark>{{ field.price }}р.</mark></div>
                     </div>
                 </div>
+                <ul class="pagination">
+                    <li v-if="fields.links.length > 3" v-for="link in fields.links">
+                        <Link :class="{'active': link.active, 'link': link.url }" @click="router.get(link.url)" v-html="link.label"></Link>
+                    </li>
+                </ul>
             </div>
         </section>
     </DefaultLayout>

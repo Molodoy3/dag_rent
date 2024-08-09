@@ -38,7 +38,7 @@ class AccountsController extends Controller
         return Inertia::render("Accounts/Index", [
             "platforms" => Platform::query()->orderBy("name")->get(),
 
-            "accounts" => Account::query()->
+            "accounts" => $accounts = Account::query()->
                 //делаем связь
                 with("platform", "games")
                     //используем поле для обработки запроса
@@ -62,7 +62,10 @@ class AccountsController extends Controller
                 //сортировка
                 ->orderBy("status", "desc")
                 ->orderByRaw('busy IS NULL, busy ASC')
-                ->get()
+                ->paginate(100)
+                ->fragment('accounts')
+                ->withQueryString(),
+            'links' => $accounts
         ]);
     }
     public function show(Account $account) {

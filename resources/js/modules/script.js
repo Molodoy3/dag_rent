@@ -4,6 +4,38 @@ export function delegationClick() {
     function documentActions(e) {
         const targetElement = e.target;
 
+
+        //для поиска в select
+        if (document.querySelector('#searchingSelect')) {
+            const inputSearch= document.querySelector('#searchingSelect');
+            const field = inputSearch.closest("[data-custom-select]").querySelector("[data-custom-select-field]");
+            if (field) {
+                inputSearch.style.visibility = 'collapse';
+                inputSearch.style.position = 'absolute';
+
+                field.style.visibility = 'visible';
+                field.style.position = 'relative';
+
+                inputSearch.id = '';
+            }
+
+        }
+        if (targetElement.closest("[data-custom-select-field]")) {
+            const field = targetElement.closest("[data-custom-select-field]");
+            const inputSearch = field.closest('[data-custom-select]').querySelector('[data-input-search]');
+
+            if (inputSearch) {
+                inputSearch.id = 'searchingSelect';
+
+                inputSearch.style.visibility = 'visible';
+                inputSearch.style.position = 'relative';
+                inputSearch.focus();
+
+                field.style.visibility = 'collapse';
+                field.style.position = 'absolute';
+            }
+        }
+
         //визуальное удаление изображения
         if (targetElement.closest(".button-delete-image")) {
             const item = e.target.closest('.item-image');

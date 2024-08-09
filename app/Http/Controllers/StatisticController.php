@@ -29,7 +29,12 @@ class StatisticController extends Controller
                 ->orWhereHas('account.platform', function ($query) use ($search) {
                     $query->where('name', 'like', '%' . $search . '%');
                 });
-            })->get(),
+            })
+                ->orderBy('added_at', 'desc')
+                ->paginate(100)
+                ->withQueryString()
+                ->fragment('sales'),
+
             "general" => [
                 "money" => Statistic::sum("price"),
                 "count" => Statistic::count(),
@@ -75,7 +80,7 @@ class StatisticController extends Controller
     }
     public function create() {
         return Inertia::render("Statistics/Create", [
-            'accounts' => Account::with('games')->get(),
+            'accounts' => Account::with('games')->orderBy("login")->get(),
         ]);
     }
     /*public function updateData() {
