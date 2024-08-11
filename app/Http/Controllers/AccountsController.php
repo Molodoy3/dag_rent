@@ -19,6 +19,44 @@ use Inertia\Inertia;
 
 class AccountsController extends Controller
 {
+    //для удаления сообщения
+    /*public function deleteFlashMessage(Request $request)
+    {
+        $request->session()->forget('message');
+        $request->session()->forget('id_elem');
+    }*/
+    public function get(Request $request)
+    {
+        return response()->json(
+            Account::query()
+                //делаем связь
+                ->with("platform", "games")
+                //используем поле для обработки запроса
+                ->when($request->input("platform_id"), function ($query, $platform_id) {
+                    //поиск со связанной таблицей
+                    $query->whereHas("platform", function ($query) use ($platform_id) {
+                        $query->where('id', '=', $platform_id);
+                    });
+                })
+                ->when($request->input("search"), function ($query, $search) {
+                    $query
+                        ->where('login', 'like', '%' . $search . '%')
+                        ->orWhere('busy', 'like', '%' . $search . '%')
+                        ->orWhereHas('platform', function ($query) use ($search) {
+                            $query->where('name', 'like', '%' . $search . '%');
+                        })
+                        ->orWhereHas('games', function ($query) use ($search) {
+                            $query->where('name', 'like', '%' . $search . '%');
+                        });
+                })
+                //сортировка
+                ->orderBy("status", "desc")
+                ->orderByRaw('busy IS NULL, busy ASC')
+                ->paginate(100)
+                ->fragment('accounts')
+                ->withQueryString()
+        );
+    }
     public function index(Request $request) {
 
 /*        dd(Account::with("platform", "games")->when($request->input("search"), function ($query, $search) {
@@ -35,37 +73,41 @@ class AccountsController extends Controller
 
         //dd(Account::search('mr')->get());
 
+        $idElem = $request->session()->get('id_elem');
+
         return Inertia::render("Accounts/Index", [
             "platforms" => Platform::query()->orderBy("name")->get(),
 
-            "accounts" => $accounts = Account::query()->
+            "accounts" => $accounts = Account::query()
                 //делаем связь
-                with("platform", "games")
-                    //используем поле для обработки запроса
-                    ->when($request->input("platform_id"), function ($query, $platform_id) {
-                            //поиск со связанной таблицей
-                            $query->whereHas("platform", function ($query) use ($platform_id) {
-                                $query->where('id', 'like', '%' . $platform_id . '%');
-                            });
-                    })
-                    ->when($request->input("search"), function ($query, $search) {
-                        $query
-                            ->where('login', 'like', '%' . $search . '%')
-                            ->orWhere('busy', 'like', '%' . $search . '%')
-                            ->orWhereHas('platform', function ($query) use ($search) {
-                                $query->where('name', 'like', '%' . $search . '%');
-                            })
-                            ->orWhereHas('games', function ($query) use ($search) {
-                                $query->where('name', 'like', '%' . $search . '%');
-                            });
-                    })
+                ->with("platform", "games")
+                //используем поле для обработки запроса
+                ->when($request->input("platform_id"), function ($query, $platform_id) {
+                        //поиск со связанной таблицей
+                        $query->whereHas("platform", function ($query) use ($platform_id) {
+                            $query->where('id', '=', $platform_id);
+                        });
+                })
+                ->when($request->input("search"), function ($query, $search) {
+                    $query
+                        ->where('login', 'like', '%' . $search . '%')
+                        ->orWhere('busy', 'like', '%' . $search . '%')
+                        ->orWhereHas('platform', function ($query) use ($search) {
+                            $query->where('name', 'like', '%' . $search . '%');
+                        })
+                        ->orWhereHas('games', function ($query) use ($search) {
+                            $query->where('name', 'like', '%' . $search . '%');
+                        });
+                })
                 //сортировка
                 ->orderBy("status", "desc")
                 ->orderByRaw('busy IS NULL, busy ASC')
                 ->paginate(100)
                 ->fragment('accounts')
                 ->withQueryString(),
-            'links' => $accounts
+
+            'links' => $accounts,
+            'accountInfo' => $idElem ? Account::query()->with("platform", "games")->find($idElem) : null,
         ]);
     }
     public function show(Account $account) {
@@ -131,7 +173,10 @@ class AccountsController extends Controller
             }
         }
 
-        return redirect()->route('accounts.index')->with("message", "Аккаунт " . $accountNew->login . " успешно добавлен!");
+        return redirect()->route('accounts.index')->with([
+            "message" => "Аккаунт " . $accountNew->login . " успешно добавлен!",
+            "id_elem" => $accountId
+        ]);
     }
     public function edit(Account $account) {
         //Mail::to(User::query()->first())->send(new OrderShipped());
@@ -226,7 +271,10 @@ class AccountsController extends Controller
             }
         }
 
-        return redirect()->route('accounts.index')->with("message", "Аккаунт " . $account['login'] . " успешно обновлен!");
+        return redirect()->route('accounts.index')->with([
+            "message" => "Аккаунт " . $account['login'] . " успешно обновлен!",
+            "id_elem" => $accountId
+        ]);
     }
     public function destroy(Account $account) {
         $account->delete();

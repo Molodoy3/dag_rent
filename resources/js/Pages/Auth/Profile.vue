@@ -26,8 +26,7 @@ function logout() {
             <section class="profile">
                 <div class="profile__container">
                     <Title>Профиль <mark>{{ user.name }}</mark></Title>
-                    <span v-if="user.role_id == 1" style="margin-top: -27px; display: block; margin-bottom: 27px; color: var(--yellow); font-weight: 500;
-                        font-size: 14px;">Администратор</span>
+                    <span v-if="user.role_id == 1" style="margin-top: -17px; font-size: 12px; display: block; margin-bottom: 27px; color: var(--yellow); font-weight: 500;">Администратор</span>
 
                     <div v-if="user.id == $page.props.auth.id" class="profile__confidential">
                         <div v-if="$page.props.flash.message" class="message">

@@ -13,6 +13,29 @@ use Inertia\Inertia;
 
 class StatisticController extends Controller
 {
+    public function get(Request $request)
+    {
+        return response()->json(
+            Statistic::with('account.platform', 'account.games')->when($request->input("search"), function ($query, $search) {
+                $query
+                    ->where('price', 'like', '%' . $search . '%')
+                    ->orWhere('added_at', 'like', '%' . $search . '%')
+                    ->orWhereHas('account', function ($query) use ($search) {
+                        $query->where('login', 'like', '%' . $search . '%');
+                    })
+                    ->orWhereHas('account.games', function ($query) use ($search) {
+                        $query->where('name', 'like', '%' . $search . '%');
+                    })
+                    ->orWhereHas('account.platform', function ($query) use ($search) {
+                        $query->where('name', 'like', '%' . $search . '%');
+                    });
+            })
+                ->orderBy('added_at', 'desc')
+                ->paginate(15)
+                ->withQueryString()
+                ->fragment('sales')
+        );
+    }
     public function index(Request $request) {
         //dd($request->input("search"));
         return Inertia::render("Statistics/Index", [
@@ -31,7 +54,7 @@ class StatisticController extends Controller
                 });
             })
                 ->orderBy('added_at', 'desc')
-                ->paginate(100)
+                ->paginate(15)
                 ->withQueryString()
                 ->fragment('sales'),
 

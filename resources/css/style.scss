@@ -50,6 +50,9 @@ body {
     flex: 1 1 auto;
     padding-top: rem(80);
 }
+.custom-select-form{
+    z-index: 10;
+}
 .custom-select-form__field{
     cursor: pointer;
 }
@@ -381,6 +384,19 @@ textarea {
         }
 
         @include adaptiv-value('gap', 10, 7, 1);
+        &_top{
+            @include adaptiv-value('margin-bottom', 30, 20, 1);
+            position: relative;
+            &::after{
+                content: '';
+                position: absolute;
+                @include adaptiv-value('bottom', -15, -10, 1);
+                width: 100%;
+                background: #595959;
+                height: rem(1);
+                left: 0;
+            }
+        }
     }
 
     &__platform{
@@ -434,7 +450,10 @@ textarea {
     }
 
     &__info {
-        //display: flex;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: rem(5);
 
         &:not(:last-child) {
             margin-bottom: rem(5);
@@ -747,7 +766,11 @@ textarea {
     display: flex;
     flex-wrap: wrap;
     gap: rem(7);
-    a {
+    span {
+        //opacity: .8;
+        pointer-events: none;
+    }
+    a, span {
         font-size: rem(12);
         font-weight: 500;
         border: rem(.3) solid var(--yellow);
@@ -757,14 +780,7 @@ textarea {
             background-color: var(--yellow);
             color: #000;
         }
-        &:focus {
-            color: inherit;
-        }
-        @media (any-hover: hover) {
-            &:hover{
-                color: inherit;
-            }
-        }
+
         &.link{
             transition: background-color 0.3s ease;
             transition: all 0.3s ease;
@@ -782,4 +798,14 @@ textarea {
     }
 }
 /*=============================================================================================================*/
+#nprogress{
+    display: none;
+}
+#nprogress .bar{
+    background-color: var(--yellow) !important;
+
+}
+#nprogress .peg{
+    box-shadow: 0 0 10px var(--yellow), 0 0 5px var(--yellow) !important;
+}
 /*=============================================================================================================*/

@@ -45,7 +45,10 @@ export function delegationClick() {
 
         //удаление окна сообщения
         if (targetElement.closest(".button-delete-message")) {
-            targetElement.closest("div").remove();
+            /*targetElement.closest("div").remove();
+            const infoElem = document.querySelector('.accounts__row_top');
+            if (infoElem)
+                infoElem.remove();*/
         }
 
         //После копирования логина, пароля высвечивание окошка

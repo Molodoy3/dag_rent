@@ -11,7 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-
+//для удаления сообщения
+//Route::post('delete-flash-message', [AccountsController::class, 'deleteFlashMessage'])->name('delete-flash-message');
 
 //Юзеры
 Route::get('login', [UserController::class, 'create'])->name('user.login');
@@ -30,9 +31,13 @@ Route::middleware(AdminMiddleware::class)->group(function () {
     Route::resource('accounts', AccountsController::class);
     //из-за того, что put не хочет передавать файлы, используем дополнительный путь с post запросом для обновления аккаунта
     Route::post('/accounts/{id}', [AccountsController::class, 'update'])->name('account.update');
+    //для обновления
+    Route::get('/get-update-accounts', [AccountsController::class, 'get'])->name('account.get');
 
     //Статистика для акков
     Route::resource('statistics', StatisticController::class);
+    //для обновления
+    Route::get('/get-update-statistics', [StatisticController::class, 'get']);
 
     //Добавление пользователя
     Route::get('/user/create', [UserController::class, 'createNew'])->name('user.create');

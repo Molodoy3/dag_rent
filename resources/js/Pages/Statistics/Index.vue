@@ -14,6 +14,31 @@ let props = defineProps({
     "flash": Object
 });
 
+//для постоянного обновления статистики
+const fields = ref(props.fields);
+let timer = null;
+const getUpdatingStatistics = async () => {
+    try {
+        const data = {
+            search: valueSearch,
+        };
+        fields.value = await fetch('/get-update-statistics',{
+            method: 'get',
+        }).then(response => response.json());
+    } catch (error) {
+        console.error('Произошла ошибка ', error);
+    }
+}
+onUnmounted(() => {
+    clearInterval(timer);
+})
+onMounted(()=> {
+    startTimer();
+});
+function startTimer() {
+    timer = setInterval( getUpdatingStatistics, 2000);
+}
+
 //Для поиска
 let search = ref('');
 //для сохранения сообщения при обновлении
@@ -25,7 +50,7 @@ watch(search, (value) => {
     valueSearch = value;
     router.get(
         "/statistics",
-        { search: value },
+        { search: value, mess: flash },
         {
             //сохранение состояния (без перезагрузки)
             preserveState: true,
@@ -34,8 +59,9 @@ watch(search, (value) => {
     );
 });
 
-let updating;
-onMounted(() => {
+//let updating;
+/*onMounted(() => {
+    //старый плохой способ обновления
     updating = setInterval(() => {
             router.get(
                 "/statistics",
@@ -47,10 +73,10 @@ onMounted(() => {
                 }
             );
         }, 5000);
-});
-onUnmounted(() => {
-    clearInterval(updating);
-});
+});*/
+/*onUnmounted(() => {
+    //clearInterval(updating);
+});*/
 /*window.Echo.channel(`account-update`).listen('AccountUpdate', (e) => {
 
 });*/
@@ -59,6 +85,20 @@ function formatMatherDate(dateString: string) {
     const date = dayjs(dateString);
     return date.format('DD.MM HH:mm');
 }
+
+function deleteFlashMessage() {
+    mess.value = null;
+    router.get(
+        "/statistics",
+        { search: valueSearch },
+        {
+            //сохранение состояния (без перезагрузки)
+            preserveState: true,
+            preserveScroll: true,
+        }
+    );
+}
+
 </script>
 
 <template>
@@ -76,7 +116,7 @@ function formatMatherDate(dateString: string) {
                 </div>
                 <Link :href="route('statistics.create')" class="button accounts__add">Добавить</Link><br>
                 <div v-if="mess" class="message">
-                    <button @click="deleteMess" class="button-delete-message">X</button>
+                    <button @click="deleteFlashMessage()" class="button-delete-message">X</button>
                     {{mess}}
                 </div>
                 <div class="statistics__row">
@@ -93,7 +133,8 @@ function formatMatherDate(dateString: string) {
                 </div>
                 <ul class="pagination">
                     <li v-if="fields.links.length > 3" v-for="link in fields.links">
-                        <Link :class="{'active': link.active, 'link': link.url }" @click="router.get(link.url)" v-html="link.label"></Link>
+                        <Link v-if="link.url && !link.active" :class="{'active': link.active, 'link': link.url }" @click="router.get(link.url)" v-html="link.label"></Link>
+                        <span v-else v-html="link.label" :class="{'active': link.active }"></span>
                     </li>
                 </ul>
             </div>
