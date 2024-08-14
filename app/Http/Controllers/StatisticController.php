@@ -31,13 +31,12 @@ class StatisticController extends Controller
                     });
             })
                 ->orderBy('added_at', 'desc')
-                ->paginate(15)
+                ->paginate(20)
                 ->withQueryString()
                 ->fragment('sales')
         );
     }
     public function index(Request $request) {
-        //dd($request->input("search"));
         return Inertia::render("Statistics/Index", [
             "fields" => Statistic::with('account.platform', 'account.games')->when($request->input("search"), function ($query, $search) {
                 $query
@@ -54,7 +53,7 @@ class StatisticController extends Controller
                 });
             })
                 ->orderBy('added_at', 'desc')
-                ->paginate(15)
+                ->paginate(20)
                 ->withQueryString()
                 ->fragment('sales'),
 

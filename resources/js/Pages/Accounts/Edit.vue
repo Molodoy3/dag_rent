@@ -2,7 +2,7 @@
 
 import {onUnmounted, PropType} from "vue";
 import AccountData = App.Data.AccountData;
-import {Head, Link, useForm} from "@inertiajs/vue3";
+import {Head, Link, router, useForm} from "@inertiajs/vue3";
 import Title from "../Components/Title.vue";
 import LabelInput from "../Components/LabelInput.vue";
 import Button from "../Components/Button.vue";
@@ -97,7 +97,7 @@ function getImage(image) {
 
 function deleteAccount() {
     if (confirm('Вы уверены, что хотите удалить аккаунт?')) {
-        router.delete('/accounts/' + account.id);
+        router.delete(route('accounts.destroy', account.id));
     }
 }
 

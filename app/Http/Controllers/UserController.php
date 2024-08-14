@@ -13,6 +13,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\In;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
@@ -48,7 +49,8 @@ class UserController extends Controller
 
         return redirect()->route('user.show', auth()->user()->id)->with("message", "Новый пользователь " . $user->name . " добавлен!");
     }
-    public function store(LoginRequest $request) {
+    public function store(LoginRequest $request): RedirectResponse {
+        //dd($request);
         $request->authenticate();
         $request->session()->regenerate();
         return redirect()->route('accounts.index')->with('message', 'Добро пожаловать');
@@ -59,9 +61,17 @@ class UserController extends Controller
         if (count($user->routeNotificationForWebPush()))
             $isPushSubscription =  true;
 
+        //для вывода картинки пользователя
+        $userDir = Storage::disk('public')->files('/img/public/users/'.$id);
+        if (count($userDir))
+            $userIcon = '/storage/' . $userDir[0];
+        else
+            $userIcon = '/storage/img/public/users/default.webp';
+
         return Inertia::render("Auth/Profile", [
-           "user" => $user,
-            "isPushSubscription" => $isPushSubscription
+            "user" => $user,
+            "isPushSubscription" => $isPushSubscription,
+            "userIcon" => $userIcon
         ]);
     }
     public function editPassword() {
@@ -89,5 +99,35 @@ class UserController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('user.login');
+    }
+    public function updateIcon(Request $request) {
+        $userID = $request->userID;
+
+        $directory = 'img/public/users/' . $userID;
+        //dd(!Storage::disk('public')->exists($directory));
+        if (!Storage::disk('public')->exists($directory)) {
+            Storage::makeDirectory($directory);
+            Storage::disk('public')->putFile($directory, $request->allFiles()['image'][0]);
+        } else {
+            // Чистим папку перед загрузкой нового изображения
+            Storage::disk('public')->deleteDirectory($directory); // Удаляем текущую папку (включая содержимое)
+            Storage::makeDirectory($directory); // Создаем папку заново
+            // Загружаем новое изображение
+            Storage::disk('public')->putFile($directory, $request->allFiles()['image'][0]);
+        }
+
+
+        /*$user = User::find($userID);
+        $userDir = Storage::disk('public')->files('/img/public/users/'.$userID);
+        $userIcon = '/storage/' . $userDir[0];
+        $isPushSubscription =  false;
+        if (count($user->routeNotificationForWebPush()))
+            $isPushSubscription =  true;
+        return Inertia::render("Auth/Profile", [
+            "user" => $user,
+            "isPushSubscription" => $isPushSubscription,
+            "userIcon" => $userIcon
+        ])->with("message", "Ваша аватарка успешно обновлена!");*/
+        return redirect()->route('user.show', $userID)->with("message", "Ваша аватарка успешно обновлена!");
     }
 }

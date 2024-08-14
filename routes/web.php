@@ -19,6 +19,7 @@ Route::get('login', [UserController::class, 'create'])->name('user.login');
 Route::post('login', [UserController::class, 'store'])->name('user.store');
 Route::post('logout', [UserController::class, 'logout'])->name('user.logout');
 Route::get('/users/{id}', [UserController::class, 'show'])->name('user.show');
+Route::post('/user/update-icon', [UserController::class, 'updateIcon'])->name('user.update-icon');
 
 //изменение пароля
 Route::get('edit-password', [UserController::class, 'editPassword'])->name('password.edit');

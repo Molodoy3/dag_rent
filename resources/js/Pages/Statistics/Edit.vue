@@ -36,7 +36,7 @@ function submit() {
 }
 function deleteStatistic() {
     if (confirm('Вы уверены, что хотите удалить продажу?')) {
-        router.delete('/statistics/' + props.sale.id, {'statistic': form});
+        router.delete(route('statistics.destroy', props.sale.id));
     }
 }
 

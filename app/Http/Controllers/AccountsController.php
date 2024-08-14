@@ -32,22 +32,25 @@ class AccountsController extends Controller
                 //делаем связь
                 ->with("platform", "games")
                 //используем поле для обработки запроса
-                ->when($request->input("platform_id"), function ($query, $platform_id) {
-                    //поиск со связанной таблицей
-                    $query->whereHas("platform", function ($query) use ($platform_id) {
-                        $query->where('id', '=', $platform_id);
-                    });
-                })
-                ->when($request->input("search"), function ($query, $search) {
-                    $query
-                        ->where('login', 'like', '%' . $search . '%')
-                        ->orWhere('busy', 'like', '%' . $search . '%')
-                        ->orWhereHas('platform', function ($query) use ($search) {
-                            $query->where('name', 'like', '%' . $search . '%');
-                        })
-                        ->orWhereHas('games', function ($query) use ($search) {
-                            $query->where('name', 'like', '%' . $search . '%');
+                ->when($request->input("platform_id") || $request->input("search"), function ($query) use ($request) {
+                    if ($request->input("platform_id")) {
+                        $query->whereHas("platform", function ($query) use ($request) {
+                            $query->where('id', '=', $request->input("platform_id"));
                         });
+                    }
+
+                    if ($request->input("search")) {
+                        $query->where(function ($query) use ($request) {
+                            $query->where('login', 'like', '%' . $request->input("search") . '%')
+                                ->orWhere('busy', 'like', '%' . $request->input("search") . '%')
+                                ->orWhereHas('platform', function ($query) use ($request) {
+                                    $query->where('name', 'like', '%' . $request->input("search") . '%');
+                                })
+                                ->orWhereHas('games', function ($query) use ($request) {
+                                    $query->where('name', 'like', '%' . $request->input("search") . '%');
+                                });
+                        });
+                    }
                 })
                 //сортировка
                 ->orderBy("status", "desc")
@@ -82,22 +85,25 @@ class AccountsController extends Controller
                 //делаем связь
                 ->with("platform", "games")
                 //используем поле для обработки запроса
-                ->when($request->input("platform_id"), function ($query, $platform_id) {
-                        //поиск со связанной таблицей
-                        $query->whereHas("platform", function ($query) use ($platform_id) {
-                            $query->where('id', '=', $platform_id);
+                ->when($request->input("platform_id") || $request->input("search"), function ($query) use ($request) {
+                    if ($request->input("platform_id")) {
+                        $query->whereHas("platform", function ($query) use ($request) {
+                            $query->where('id', '=', $request->input("platform_id"));
                         });
-                })
-                ->when($request->input("search"), function ($query, $search) {
-                    $query
-                        ->where('login', 'like', '%' . $search . '%')
-                        ->orWhere('busy', 'like', '%' . $search . '%')
-                        ->orWhereHas('platform', function ($query) use ($search) {
-                            $query->where('name', 'like', '%' . $search . '%');
-                        })
-                        ->orWhereHas('games', function ($query) use ($search) {
-                            $query->where('name', 'like', '%' . $search . '%');
+                    }
+
+                    if ($request->input("search")) {
+                        $query->where(function ($query) use ($request) {
+                            $query->where('login', 'like', '%' . $request->input("search") . '%')
+                                ->orWhere('busy', 'like', '%' . $request->input("search") . '%')
+                                ->orWhereHas('platform', function ($query) use ($request) {
+                                    $query->where('name', 'like', '%' . $request->input("search") . '%');
+                                })
+                                ->orWhereHas('games', function ($query) use ($request) {
+                                    $query->where('name', 'like', '%' . $request->input("search") . '%');
+                                });
                         });
+                    }
                 })
                 //сортировка
                 ->orderBy("status", "desc")
@@ -163,7 +169,7 @@ class AccountsController extends Controller
         //$accountNew->games->searchable();
 
         //можно менять public на local
-        $directory = 'public/img/public/accounts/' . $accountId; // Здесь добавляем 'public/' в путь
+        $directory = '/img/public/accounts/' . $accountId; // Здесь добавляем 'public/' в путь
         if (!Storage::disk('public')->exists($directory)) {
             Storage::makeDirectory($directory);
             if (isset($account->allFiles()['images'])) {

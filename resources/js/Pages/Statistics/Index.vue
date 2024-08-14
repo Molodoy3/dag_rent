@@ -16,19 +16,27 @@ let props = defineProps({
 
 //для постоянного обновления статистики
 const fields = ref(props.fields);
+watch(() => props.fields, (newFields) => {
+    fields.value = newFields;
+});
 let timer = null;
-const getUpdatingStatistics = async () => {
+const getUpdatingStatistics = () => {
+    updateStatistics();
+}
+
+async function updateStatistics() {
     try {
-        const data = {
-            search: valueSearch,
-        };
-        fields.value = await fetch('/get-update-statistics',{
-            method: 'get',
-        }).then(response => response.json());
+        const params = new URLSearchParams({
+            search: search.value,
+            //обязательно если есть пагинация указываем номер страницы и конечно из props обязательно
+            page: props.fields.current_page
+        });
+        fields.value = await fetch(`/get-update-statistics?${params}`).then(response => response.json());
     } catch (error) {
         console.error('Произошла ошибка ', error);
     }
 }
+
 onUnmounted(() => {
     clearInterval(timer);
 })
@@ -41,23 +49,15 @@ function startTimer() {
 
 //Для поиска
 let search = ref('');
-//для сохранения сообщения при обновлении
-const flash = props.flash.message;
-const mess = ref(flash);
-
-let valueSearch = "";
 watch(search, (value) => {
-    valueSearch = value;
-    router.get(
-        "/statistics",
-        { search: value, mess: flash },
-        {
-            //сохранение состояния (без перезагрузки)
-            preserveState: true,
-            preserveScroll: true,
-        }
-    );
+    updateStatistics();
 });
+
+//для сохранения сообщения при обновлении
+//const flash = props.flash.message;
+//const mess = ref(flash);
+
+
 
 //let updating;
 /*onMounted(() => {
@@ -115,9 +115,9 @@ function deleteFlashMessage() {
                     <input class="statistics__search input" type="text" v-model="search" placeholder="Поиск...">
                 </div>
                 <Link :href="route('statistics.create')" class="button accounts__add">Добавить</Link><br>
-                <div v-if="mess" class="message">
+                <div v-if="$page.props.flash.message" class="message">
                     <button @click="deleteFlashMessage()" class="button-delete-message">X</button>
-                    {{mess}}
+                    {{$page.props.flash.message}}
                 </div>
                 <div class="statistics__row">
                     <div @click="router.get('/statistics/' + field.id + '/edit')" v-for="field in fields.data"
@@ -132,7 +132,8 @@ function deleteFlashMessage() {
                     </div>
                 </div>
                 <ul class="pagination">
-                    <li v-if="fields.links.length > 3" v-for="link in fields.links">
+<!--                тут используем props, так как ref ссылка fields менять link будет при обновлении данных и будут ссылки на json объекты -->
+                    <li v-if="props.fields.links.length > 3" v-for="link in props.fields.links">
                         <Link v-if="link.url && !link.active" :class="{'active': link.active, 'link': link.url }" @click="router.get(link.url)" v-html="link.label"></Link>
                         <span v-else v-html="link.label" :class="{'active': link.active }"></span>
                     </li>

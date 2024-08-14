@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -39,6 +40,13 @@ class HandleInertiaRequests extends Middleware
         //if (auth()->user())
         //    abort(403);
 
+        // Получаем ID пользователя
+        $userId = $request->user() ? $request->user()->id : null;
+
+        // Логика определения изображения
+        $userDir = Storage::disk('public')->files('/img/public/users/' . $userId);
+        $userIcon = count($userDir) ? '/storage/' . $userDir[0] : '/storage/img/public/users/default.webp';
+
         return array_merge(parent::share($request), [
             'flash' => [
                 'message' => fn () => $request->session()->get('message'),
@@ -47,7 +55,8 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'id' => $request->user() ? $request->user()->id : null,
                 'user' => $request->user(),
-                'isAdmin' => $request->user() ? ( $request->user()->role_id == 1 ? true : false ) : null
+                'isAdmin' => $request->user() ? ( $request->user()->role_id == 1 ? true : false ) : null,
+                'icon' => $userIcon,  // Добавляем иконку
                 /*'permissions' => [
                     'post' => [
                         //'update' => $request->post ? Gate::allows('update-post', $request->post) : false,

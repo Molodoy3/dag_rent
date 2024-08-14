@@ -23,23 +23,27 @@ const props = defineProps({
 });
 
 const accounts = ref(props.accounts);
-watch(() => props.accounts, (newAccounts) => {
+/*watch(() => props.accounts, (newAccounts) => {
     accounts.value = newAccounts;
-});
-
+});*/
 
 //const index = client.initIndex('accounts');
 //const client = algoliasearch('D13NJE4NTK', '3505f06444af6ed2f27521bfc4c6c390');
 
-let timer = null;
 
+let timer = null;
 //получение обновленных аккаунтов через get запрос с помощью fetch
-const getAccounts = async () => {
+const getAccounts = () => {
     //console.log(router.post('account.get'));
+    updateAccounts();
+};
+async function updateAccounts() {
     try {
         const params = new URLSearchParams({
-            search: valueSearch,
-            platform_id: platform_id.value
+            search: search.value,
+            platform_id: platform_id.value,
+            //обязательно если есть пагинация указываем номер страницы и конечно из props обязательно
+            page: props.accounts.current_page
         });
 
         accounts.value = await fetch(`/get-update-accounts?${params}`)
@@ -47,7 +51,8 @@ const getAccounts = async () => {
     } catch (error) {
         console.error('Ошибка при получении данных:', error);
     }
-};
+}
+
 const startTimer = () => {
     timer = setInterval(getAccounts, 3000); // Запускаем таймер каждые 1000 мс
 };
@@ -66,7 +71,7 @@ onMounted(() => {
     const customSelect = document.querySelector('[data-custom-select-options]');
     const searchCustomItems = customSelect.querySelectorAll('li');
 
-    input.addEventListener('input', function(e) {
+    input.addEventListener('input', function (e) {
         const target = e.target;
 
         const val = target.value.trim().toUpperCase();
@@ -115,42 +120,25 @@ function formatDate(dateString: string) {
     }
 }
 
-//Для поиска
+//Для
+//let valueSearch = "";
 let search = ref('');
+watch(search, (value) => {
+    //valueSearch = value;
+    updateAccounts();
+});
 let platform_id = ref('');
+watch(platform_id, (value) => {
+    //valueSearch = search.value;
+    updateAccounts();
+});
 function onPlatformChange(id) {
     platform_id.value = id;
 
 }
 //для сохранения сообщения при обновлении
-const flash = props.flash.message;
-const mess = ref(flash);
-
-let valueSearch = "";
-watch(platform_id, (value) => {
-    valueSearch = search.value;
-    router.get(
-        "/",
-        { search: valueSearch, platform_id: value },
-        {
-            //сохранение состояния (без перезагрузки)
-            preserveState: true,
-            preserveScroll: true,
-        }
-    );
-});
-watch(search, (value) => {
-    valueSearch = value;
-    router.get(
-        "/",
-        { search: value, platform_id: platform_id.value },
-        {
-            //сохранение состояния (без перезагрузки)
-            preserveState: true,
-            preserveScroll: true,
-        }
-    );
-});
+//const flash = props.flash.message;
+//const mess = ref(flash);
 
 /*let updating;
 onMounted(() => {
@@ -190,6 +178,7 @@ function deleteFlashMessage() {
 
 <template>
     <DefaultLayout>
+
         <Head title="Аккаунты"></Head>
         <section class="accounts">
             <!--            <ais-instant-search id="search-wrap" :search-client="client" index-name="accounts" class='accounts__container'>
@@ -237,11 +226,13 @@ function deleteFlashMessage() {
                                 <option value="0">Сброс</option>
                                 <option :selected="platform.id == platform_id" v-for="platform in platforms"
                                     :value='platform.id'>{{
-                                    platform.name }}
+                                        platform.name }}
                                 </option>
                             </select>
                             <div class="form__custom-select custom-select-form input">
-                                <input style="visibility:collapse; margin: 0; position: absolute;" type="text" class="custom-select-form__field custom-select-form__input input" data-input-search placeholder="Платформа">
+                                <input style="visibility:collapse; margin: 0; position: absolute;" type="text"
+                                    class="custom-select-form__field custom-select-form__input input" data-input-search
+                                    placeholder="Платформа">
                                 <div data-custom-select-field class="custom-select-form__field"></div>
                                 <ul data-custom-select-options class="custom-select-form__options">
                                     <li data-custom-select-option="0" @click="onPlatformChange('0')">Сброс</li>
@@ -261,36 +252,44 @@ function deleteFlashMessage() {
                 </div>
                 <div v-if="accountInfo" class="accounts__row accounts__row_top">
                     <div class="accounts__item"
-                         :class="{ 'accounts__item_busy': accountInfo.busy, 'accounts__item_process': accountInfo.status == 1, 'accounts__item_problem': accountInfo.status == 2 }">
-                        <h3 class="statistics__account-games"><span v-for="game in accountInfo.games">{{ game.name }}</span>
+                        :class="{ 'accounts__item_busy': accountInfo.busy, 'accounts__item_process': accountInfo.status == 1, 'accounts__item_problem': accountInfo.status == 2 }">
+                        <h3 class="statistics__account-games"><span v-for="game in accountInfo.games">{{ game.name
+                                }}</span>
                         </h3>
                         <div class="accounts__info">
                             <!--                        <div class="accounts__info-title">Логин:</div>-->
                             <span @click="copy(accountInfo.login)" class="accounts__weight accounts__copy">{{
-                                    accountInfo.login
+                                accountInfo.login
                                 }}</span>
                         </div>
                         <div class="accounts__info">
                             <!--                        <div class="accounts__info-title">Пароль:</div>-->
-                            <span @click="copy(accountInfo.password)" class="accounts__weight accounts__copy">{{ accountInfo.password }}</span>
+                            <span @click="copy(accountInfo.password)" class="accounts__weight accounts__copy">{{
+                                accountInfo.password }}</span>
                         </div>
-                        <div class="accounts__info">
-                            <!--                        <div class="accounts__info-title">Пароль:</div>-->
-                            <span class="accounts__platform">{{ accountInfo.platform.name }}</span>
-                        </div>
-                        <div class="accounts__status">
-                            <div class="accounts__free" v-if="accountInfo.busy == null && accountInfo.status == null">Свободен</div>
-                            <div class="accounts__process" v-if="accountInfo.status == 1">В процессе публикации</div>
-                            <div class="accounts__problem" v-if="accountInfo.status == 2">Проблема(ы)</div>
-                            <div class="accounts__date" v-if="accountInfo.busy && accountInfo.status == null">{{
-                                    formatDate(accountInfo.busy)
-                                }}
+                        <div class="accounts__clamping">
+                            <div class="accounts__info">
+                                <!--                        <div class="accounts__info-title">Пароль:</div>-->
+                                <div class="accounts__status">
+                                    <div class="accounts__free"
+                                        v-if="accountInfo.busy == null && accountInfo.status == null">
+                                        Свободен</div>
+                                    <div class="accounts__process" v-if="accountInfo.status == 1">В процессе публикации
+                                    </div>
+                                    <div class="accounts__problem" v-if="accountInfo.status == 2">Проблема(ы)</div>
+                                    <div class="accounts__date" v-if="accountInfo.busy && accountInfo.status == null">{{
+                                        formatDate(accountInfo.busy)
+                                        }}
+                                    </div>
+                                </div>
+                                <span class="accounts__platform">{{ accountInfo.platform.name }}</span>
                             </div>
                         </div>
                         <div class="accounts__buttons">
                             <Button @click="router.get('/accounts/' + accountInfo.id + '/edit')">Перейти</Button>
-                            <Button @click="copy('Логин: ' + accountInfo.login + ' \\n Пароль: ' + accountInfo.password)"
-                                    class="accounts__copy">Копировать
+                            <Button
+                                @click="copy('Логин: ' + accountInfo.login + ' \\n Пароль: ' + accountInfo.password)"
+                                class="accounts__copy">Копировать
                             </Button>
                         </div>
                     </div>
@@ -301,8 +300,15 @@ function deleteFlashMessage() {
                 <div class="accounts__row">
                     <div class="accounts__item" v-for="item in accounts.data"
                         :class="{ 'accounts__item_busy': item.busy, 'accounts__item_process': item.status == 1, 'accounts__item_problem': item.status == 2 }">
-                        <h3 class="statistics__account-games"><span v-for="game in item.games">{{ game.name }}</span>
-                        </h3>
+                        <div class="accounts__top">
+                            <div class="accounts__info">
+                                <h3 class="statistics__account-games"><span v-for="game in item.games">{{ game.name
+                                        }}</span>
+                                </h3>
+                                <span class="accounts__platform">{{ item.platform.name }}</span>
+                            </div>
+                        </div>
+
                         <div class="accounts__info">
                             <!--                        <div class="accounts__info-title">Логин:</div>-->
                             <span @click="copy(item.login)" class="accounts__weight accounts__copy">{{
@@ -311,20 +317,23 @@ function deleteFlashMessage() {
                         </div>
                         <div class="accounts__info">
                             <!--                        <div class="accounts__info-title">Пароль:</div>-->
-                            <span @click="copy(item.password)" class="accounts__weight accounts__copy">{{ item.password }}</span>
+                            <span @click="copy(item.password)" class="accounts__weight accounts__copy">{{ item.password
+                                }}</span>
                         </div>
-                        <div class="accounts__info">
-                            <!--                        <div class="accounts__info-title">Пароль:</div>-->
-                            <div class="accounts__status">
-                                <div class="accounts__free" v-if="item.busy == null && item.status == null">Свободен</div>
-                                <div class="accounts__process" v-if="item.status == 1">В процессе публикации</div>
-                                <div class="accounts__problem" v-if="item.status == 2">Проблема(ы)</div>
-                                <div class="accounts__date" v-if="item.busy && item.status == null">{{
+                        <div class="accounts__clamping">
+                            <div class="accounts__info">
+                                <!--                        <div class="accounts__info-title">Пароль:</div>-->
+                                <div class="accounts__status">
+                                    <div class="accounts__free" v-if="item.busy == null && item.status == null">Свободен
+                                    </div>
+                                    <div class="accounts__process" v-if="item.status == 1">В процессе публикации</div>
+                                    <div class="accounts__problem" v-if="item.status == 2">Проблема(ы)</div>
+                                    <div class="accounts__date" v-if="item.busy && item.status == null">{{
                                         formatDate(item.busy)
-                                    }}
+                                        }}
+                                    </div>
                                 </div>
                             </div>
-                            <span class="accounts__platform">{{ item.platform.name }}</span>
                         </div>
                         <div class="accounts__buttons">
                             <Button @click="router.get('/accounts/' + item.id + '/edit')">Перейти</Button>
@@ -333,12 +342,15 @@ function deleteFlashMessage() {
                             </Button>
                         </div>
                     </div>
-<!--                    <Pagination :data="accounts"/>-->
+                    <!--                    <Pagination :data="accounts"/>-->
                 </div>
                 <ul class="pagination">
-                    <li v-if="accounts.links.length > 3" v-for="link in accounts.links">
-                        <Link v-if="link.url && !link.active" :class="{'active': link.active, 'link': link.url }" @click="router.get(link.url)" v-html="link.label"></Link>
-                        <span v-else v-html="link.label" :class="{'active': link.active }"></span>
+                    <!--                тут используем props, так как ref ссылка fields менять link будет при обновлении данных и будут ссылки на json объекты -->
+                    <li v-if="props.accounts.links.length > 3" v-for="link in props.accounts.links">
+                        <Link v-if="link.url && !link.active" :class="{ 'active': link.active, 'link': link.url }"
+                            @click="router.get(link.url)" v-html="link.label">
+                        </Link>
+                        <span v-else v-html="link.label" :class="{ 'active': link.active }"></span>
                     </li>
                 </ul>
             </div>

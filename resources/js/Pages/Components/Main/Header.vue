@@ -23,7 +23,11 @@ import {Link, router} from "@inertiajs/vue3";
                     </ul>
                 </nav>
             </div>
-            <Link v-if="$page.props.auth.id" :href="route('user.show', $page.props.auth.id)"  class="header__profile button">Профиль</Link>
+            <Link v-if="$page.props.auth.id" :href="route('user.show', $page.props.auth.id)"  class="header__profile">
+                <div class="header__icon">
+                    <img :src="$page.props.auth.icon" alt="icon">
+                </div>
+            </Link>
             <Link v-else :href="route('user.login')" class="header__profile button">Войти</Link>
         </div>
     </header>
