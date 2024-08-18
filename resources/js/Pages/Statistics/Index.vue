@@ -14,6 +14,9 @@ let props = defineProps({
     "flash": Object
 });
 
+//чтобы при поиске обновлять основную статистику
+const general = ref(props.general);
+
 //для постоянного обновления статистики
 const fields = ref(props.fields);
 watch(() => props.fields, (newFields) => {
@@ -31,7 +34,10 @@ async function updateStatistics() {
             //обязательно если есть пагинация указываем номер страницы и конечно из props обязательно
             page: props.fields.current_page
         });
-        fields.value = await fetch(`/get-update-statistics?${params}`).then(response => response.json());
+        await fetch(`/get-update-statistics?${params}`).then(response => response.json().then(data => {
+            fields.value = data.fields
+            general.value = data.general
+        }))
     } catch (error) {
         console.error('Произошла ошибка ', error);
     }
@@ -50,7 +56,19 @@ function startTimer() {
 //Для поиска
 let search = ref('');
 watch(search, (value) => {
-    updateStatistics();
+    //если текущая страница не первая, то перезагружаем на первую
+    if (fields.value.current_page > 1) {
+        router.get(
+            "/statistics",
+            { search: search.value, page: 1 },
+            {
+                //сохранение состояния (без перезагрузки)
+                preserveState: true,
+                preserveScroll: true,
+            }
+        );
+    } else
+        updateStatistics();
 });
 
 //для сохранения сообщения при обновлении
@@ -86,11 +104,24 @@ function formatMatherDate(dateString: string) {
     return date.format('DD.MM HH:mm');
 }
 
-function deleteFlashMessage() {
+/*function deleteFlashMessage() {
     mess.value = null;
     router.get(
         "/statistics",
         { search: valueSearch },
+        {
+            //сохранение состояния (без перезагрузки)
+            preserveState: true,
+            preserveScroll: true,
+        }
+    );
+}*/
+
+//чтобы при перелистывании страницы поиск сохранялся
+function nextPaginate(url) {
+    router.get(
+        url,
+        { search: search.value },
         {
             //сохранение состояния (без перезагрузки)
             preserveState: true,
@@ -116,7 +147,7 @@ function deleteFlashMessage() {
                 </div>
                 <Link :href="route('statistics.create')" class="button accounts__add">Добавить</Link><br>
                 <div v-if="$page.props.flash.message" class="message">
-                    <button @click="deleteFlashMessage()" class="button-delete-message">X</button>
+                    <button class="button-delete-message">X</button>
                     {{$page.props.flash.message}}
                 </div>
                 <div class="statistics__row">
@@ -133,8 +164,9 @@ function deleteFlashMessage() {
                 </div>
                 <ul class="pagination">
 <!--                тут используем props, так как ref ссылка fields менять link будет при обновлении данных и будут ссылки на json объекты -->
-                    <li v-if="props.fields.links.length > 3" v-for="link in props.fields.links">
-                        <Link v-if="link.url && !link.active" :class="{'active': link.active, 'link': link.url }" @click="router.get(link.url)" v-html="link.label"></Link>
+                    <li v-if="fields.links.length > 3" v-for="link in fields.links">
+                        <button v-if="link.url && !link.active" :class="{'active': link.active, 'link': link.url }"
+                                @click="nextPaginate(link.url)" v-html="link.label"></button>
                         <span v-else v-html="link.label" :class="{'active': link.active }"></span>
                     </li>
                 </ul>

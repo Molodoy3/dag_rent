@@ -34,7 +34,6 @@ const accounts = ref(props.accounts);
 let timer = null;
 //получение обновленных аккаунтов через get запрос с помощью fetch
 const getAccounts = () => {
-    //console.log(router.post('account.get'));
     updateAccounts();
 };
 async function updateAccounts() {
@@ -120,17 +119,40 @@ function formatDate(dateString: string) {
     }
 }
 
-//Для
-//let valueSearch = "";
+//следим за поисковой строкой
 let search = ref('');
 watch(search, (value) => {
-    //valueSearch = value;
-    updateAccounts();
+    //если текущая страница не первая, то перезагружаем на первую
+    if (accounts.value.current_page > 1) {
+        router.get(
+            "/",
+            { search: search.value, platform_id: platform_id.value, page: 1 },
+            {
+                //сохранение состояния (без перезагрузки)
+                preserveState: true,
+                preserveScroll: true,
+            }
+        );
+    } else
+        updateAccounts();
 });
+
+//следим за изменением платформы в фильре
 let platform_id = ref('');
 watch(platform_id, (value) => {
-    //valueSearch = search.value;
-    updateAccounts();
+    //если текущая страница не первая, то перезагружаем на первую
+    if (accounts.value.current_page > 1) {
+        router.get(
+            "/",
+            { search: search.value, platform_id: platform_id.value, page: 1 },
+            {
+                //сохранение состояния (без перезагрузки)
+                preserveState: true,
+                preserveScroll: true,
+            }
+        );
+    } else
+        updateAccounts();
 });
 function onPlatformChange(id) {
     platform_id.value = id;
@@ -159,13 +181,27 @@ onUnmounted(() => {
 });*/
 
 
+//@click="deleteFlashMessage()"
 //const mess = ref(props.flash.message)
-function deleteFlashMessage() {
+/*function deleteFlashMessage() {
     //router.post('delete-flash-message');
     mess.value = null;
     router.get(
         "/",
-        { search: valueSearch, platform_id: platform_id.value },
+        { search: search.value, platform_id: platform_id.value },
+        {
+            //сохранение состояния (без перезагрузки)
+            preserveState: true,
+            preserveScroll: true,
+        }
+    );
+}*/
+
+//чтобы при перелистывании страницы поиск сохранялся
+function nextPaginate(url) {
+    router.get(
+        url,
+        { search: search.value, platform_id: platform_id.value },
         {
             //сохранение состояния (без перезагрузки)
             preserveState: true,
@@ -247,7 +283,7 @@ function deleteFlashMessage() {
                 </div>
                 <a :href="route('accounts.create')" class="accounts__add button">Добавить</a><br>
                 <div v-if="$page.props.flash.message" class="message">
-                    <button @click="deleteFlashMessage()" class="button-delete-message">X</button>
+                    <button class="button-delete-message">X</button>
                     {{ $page.props.flash.message }}
                 </div>
                 <div v-if="accountInfo" class="accounts__row accounts__row_top">
@@ -346,10 +382,10 @@ function deleteFlashMessage() {
                 </div>
                 <ul class="pagination">
                     <!--                тут используем props, так как ref ссылка fields менять link будет при обновлении данных и будут ссылки на json объекты -->
-                    <li v-if="props.accounts.links.length > 3" v-for="link in props.accounts.links">
-                        <Link v-if="link.url && !link.active" :class="{ 'active': link.active, 'link': link.url }"
-                            @click="router.get(link.url)" v-html="link.label">
-                        </Link>
+                    <li v-if="accounts.links.length > 3" v-for="link in accounts.links">
+                        <button v-if="link.url && !link.active" :class="{ 'active': link.active, 'link': link.url }"
+                            @click="nextPaginate(link.url)" v-html="link.label">
+                        </button>
                         <span v-else v-html="link.label" :class="{ 'active': link.active }"></span>
                     </li>
                 </ul>

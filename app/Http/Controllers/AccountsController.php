@@ -55,7 +55,8 @@ class AccountsController extends Controller
                 //сортировка
                 ->orderBy("status", "desc")
                 ->orderByRaw('busy IS NULL, busy ASC')
-                ->paginate(100)
+                //пагинация с кастомным путем, так как путь при автоматическом обновлении (метод get) меняется
+                ->paginate(100)->setPath('/accounts')
                 ->fragment('accounts')
                 ->withQueryString()
         );
@@ -108,7 +109,8 @@ class AccountsController extends Controller
                 //сортировка
                 ->orderBy("status", "desc")
                 ->orderByRaw('busy IS NULL, busy ASC')
-                ->paginate(100)
+                //пагинация с кастомным путем, так как путь при автоматическом обновлении (метод get) меняется
+                ->paginate(100)->setPath('/accounts')
                 ->fragment('accounts')
                 ->withQueryString(),
 

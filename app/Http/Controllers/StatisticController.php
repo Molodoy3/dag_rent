@@ -15,31 +15,8 @@ class StatisticController extends Controller
 {
     public function get(Request $request)
     {
-        return response()->json(
-            Statistic::with('account.platform', 'account.games')->when($request->input("search"), function ($query, $search) {
-                $query
-                    ->where('price', 'like', '%' . $search . '%')
-                    ->orWhere('added_at', 'like', '%' . $search . '%')
-                    ->orWhereHas('account', function ($query) use ($search) {
-                        $query->where('login', 'like', '%' . $search . '%');
-                    })
-                    ->orWhereHas('account.games', function ($query) use ($search) {
-                        $query->where('name', 'like', '%' . $search . '%');
-                    })
-                    ->orWhereHas('account.platform', function ($query) use ($search) {
-                        $query->where('name', 'like', '%' . $search . '%');
-                    });
-            })
-                ->orderBy('added_at', 'desc')
-                ->paginate(20)
-                ->withQueryString()
-                ->fragment('sales')
-        );
-    }
-    public function index(Request $request) {
-        return Inertia::render("Statistics/Index", [
-            "fields" => Statistic::with('account.platform', 'account.games')->when($request->input("search"), function ($query, $search) {
-                $query
+        $fields = Statistic::with('account.platform', 'account.games')->when($request->input("search"), function ($query, $search) {
+            $query
                 ->where('price', 'like', '%' . $search . '%')
                 ->orWhere('added_at', 'like', '%' . $search . '%')
                 ->orWhereHas('account', function ($query) use ($search) {
@@ -51,16 +28,51 @@ class StatisticController extends Controller
                 ->orWhereHas('account.platform', function ($query) use ($search) {
                     $query->where('name', 'like', '%' . $search . '%');
                 });
-            })
+        });
+        return response()->json(
+            [
+                "fields" => $fields
+                    ->orderBy('added_at', 'desc')
+                    ->paginate(25)->setPath('/statistics')
+                    ->withQueryString()
+                    ->fragment('sales'),
+
+                "general" => [
+                    "money" => $fields->sum("price"),
+                    "count" => $fields->count(),
+                    "averagePrice" => $fields->sum("price") > 0 ? round($fields->sum("price") / $fields->count(), 2) : 0
+                ]
+            ]
+
+        );
+    }
+    public function index(Request $request) {
+        $fields = Statistic::with('account.platform', 'account.games')->when($request->input("search"), function ($query, $search) {
+            $query
+                ->where('price', 'like', '%' . $search . '%')
+                ->orWhere('added_at', 'like', '%' . $search . '%')
+                ->orWhereHas('account', function ($query) use ($search) {
+                    $query->where('login', 'like', '%' . $search . '%');
+                })
+                ->orWhereHas('account.games', function ($query) use ($search) {
+                    $query->where('name', 'like', '%' . $search . '%');
+                })
+                ->orWhereHas('account.platform', function ($query) use ($search) {
+                    $query->where('name', 'like', '%' . $search . '%');
+                });
+        });
+
+        return Inertia::render("Statistics/Index", [
+            "fields" => $fields
                 ->orderBy('added_at', 'desc')
-                ->paginate(20)
+                ->paginate(25)->setPath('/statistics')
                 ->withQueryString()
                 ->fragment('sales'),
 
             "general" => [
-                "money" => Statistic::sum("price"),
-                "count" => Statistic::count(),
-                "averagePrice" => Statistic::sum("price") > 0 ? round(Statistic::sum("price") / Statistic::count(), 2) : 0
+                "money" => $fields->sum("price"),
+                "count" => $fields->count(),
+                "averagePrice" => $fields->sum("price") > 0 ? round($fields->sum("price") / $fields->count(), 2) : 0
             ]
         ]);
     }

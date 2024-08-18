@@ -772,7 +772,10 @@ textarea {
         //opacity: .8;
         pointer-events: none;
     }
-    a, span {
+    a, span, button {
+        background-color: transparent;
+        color: var(--white);
+        display: inline-block;
         font-size: rem(12);
         font-weight: 500;
         border: rem(.3) solid var(--yellow);
@@ -830,21 +833,20 @@ textarea {
             object-fit: cover;
         }
         //overflow: hidden;
-        @include adaptiv-value('width', 100, 50, 1);
-        @include adaptiv-value('height', 100, 50, 1);
+        @include adaptiv-value('width', 100, 60, 1);
+        @include adaptiv-value('height', 100, 60, 1);
         img {
             border-radius: 50%;
         }
     }
     &__edit-user-icon{
         position: absolute;
-        top: 8%;
+        top: 6%;
         right: 0;
         z-index: 10;
-        width: rem(23);
-        height: rem(23);
+        @include adaptiv-value('width', 23, 18, 1);
+        @include adaptiv-value('height', 23, 18, 1);
         border-radius: 50%;
-        display: block;
         background-color: var(--yellow);
         display: flex;
         justify-content: center;
