@@ -29,6 +29,10 @@ class StatisticController extends Controller
                     $query->where('name', 'like', '%' . $search . '%');
                 });
         });
+
+        //приходится дублировать, так как при применении методов к коллекции, сама коллекция тоже меняется
+        $fieldsForGeneral = clone $fields;
+
         return response()->json(
             [
                 "fields" => $fields
@@ -38,9 +42,9 @@ class StatisticController extends Controller
                     ->fragment('sales'),
 
                 "general" => [
-                    "money" => $fields->sum("price"),
-                    "count" => $fields->count(),
-                    "averagePrice" => $fields->sum("price") > 0 ? round($fields->sum("price") / $fields->count(), 2) : 0
+                    "money" => $fieldsForGeneral->sum("price"),
+                    "count" => $fieldsForGeneral->count(),
+                    "averagePrice" => $fieldsForGeneral->sum("price") > 0 ? round($fieldsForGeneral->sum("price") / $fieldsForGeneral->count(), 2) : 0
                 ]
             ]
 
@@ -62,6 +66,9 @@ class StatisticController extends Controller
                 });
         });
 
+        //приходится дублировать, так как при применении методов к коллекции, сама коллекция тоже меняется
+        $fieldsForGeneral = clone $fields;
+
         return Inertia::render("Statistics/Index", [
             "fields" => $fields
                 ->orderBy('added_at', 'desc')
@@ -70,9 +77,9 @@ class StatisticController extends Controller
                 ->fragment('sales'),
 
             "general" => [
-                "money" => $fields->sum("price"),
-                "count" => $fields->count(),
-                "averagePrice" => $fields->sum("price") > 0 ? round($fields->sum("price") / $fields->count(), 2) : 0
+                "money" => $fieldsForGeneral->sum("price"),
+                "count" => $fieldsForGeneral->count(),
+                "averagePrice" => $fieldsForGeneral->sum("price") > 0 ? round($fieldsForGeneral->sum("price") / $fieldsForGeneral->count(), 2) : 0
             ]
         ]);
     }
